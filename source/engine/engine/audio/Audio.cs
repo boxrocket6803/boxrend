@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-
 public class Audio(Game game) {
 	public Game Game = game;
 
@@ -25,7 +24,7 @@ public class Audio(Game game) {
 		private float FadeTime;
 		private float Fade;
 
-		public unsafe static Sound Load(AL instance, byte[] file) {
+		public static Sound Load(AL instance, byte[] file) {
 			var sound = new Sound {
 				Stream = new VorbisReader(new MemoryStream(file)),
 				Instance = instance,

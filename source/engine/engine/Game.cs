@@ -19,13 +19,12 @@ public class Game {
 	public Input Input {get; set;}
 
 	public Scene Scene {get; set;}
-	public GameManager Manager {get; set;}
 
 	private void Init() {
 		Directory = Path.GetDirectoryName(System.Environment.ProcessPath);
-		var test = Directory == "E:\\iso3\\source\\game\\bin";
+		var test = Directory == "E:\\engine\\source\\game\\bin";
 		if (test)
-			Directory = "E:\\iso3";
+			Directory = "E:\\engine";
 		Time.Update();
 
 		Core = new(this, "core");
@@ -34,7 +33,7 @@ public class Game {
 		Assets.Init();
 		Window = Silk.NET.Windowing.Window.Create(WindowOptions.Default with {
 			Size = new(300, 1),
-			Title = "ISO3",
+			Title = "BOXDRAW",
 			VSync = false
 		});
 		Window.Initialize();
@@ -45,7 +44,6 @@ public class Game {
 		Input = new();
 		Input.Init(Window);
 		Scene.Active = Scene = new(this);
-		Manager = new();
 
 		Window.Update += Update;
 		Window.FramebufferResize += (size) => Graphics.Instance?.Viewport(size);
