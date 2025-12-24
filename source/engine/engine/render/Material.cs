@@ -11,7 +11,9 @@ public class Material {
 	public void Set(string property, Vector2 value) => Attributes[property] = value;
 	public void Set(string property, Texture value) => Attributes[property] = value;
 	public void Bind() {
-		Graphics.UseProgram(this);
+		if (Active != this)
+			Graphics.Instance.UseProgram(Handle);
+		Active = this;
 		foreach (var attribute in Attributes) {
 			var hc = attribute.Value.GetHashCode();
 			if (State.GetValueOrDefault(attribute.Key) == hc)
@@ -35,6 +37,7 @@ public class Material {
 	}
 
 	private readonly static Dictionary<int,Material> Resident = [];
+	private static Material Active {get; set;}
 	public static Material From(Resources system, string vert, string frag) {
 		var v = Shader.Get(system, vert, ShaderType.VertexShader);
 		var f = Shader.Get(system, frag, ShaderType.FragmentShader);

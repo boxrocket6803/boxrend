@@ -17,14 +17,6 @@ public class Graphics(Game game) {
 		Log.Info($"graphics init in {Math.Round(timer.Elapsed.TotalSeconds * 1000, 2)}ms");
 	}
 
-	private static Material CurrentProgram;
-	public static void UseProgram(Material program) {
-		if (program == CurrentProgram)
-			return;
-		CurrentProgram = program;
-		Instance.UseProgram(program.Handle);
-	}
-
 	//TODO functions to instance render meshes
 
 	public void Render() {
