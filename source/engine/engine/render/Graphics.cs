@@ -17,12 +17,30 @@ public class Graphics(Game game) {
 		Log.Info($"graphics init in {Math.Round(timer.Elapsed.TotalSeconds * 1000, 2)}ms");
 	}
 
-	//TODO functions to instance render meshes
-
+	private struct Batch() {
+		public Mesh Mesh {get; set;}
+		public Material Material {get; set;}
+		public List<Transform> Instances {get; set;} = [];
+		public void Render() {
+			Material.Bind();
+			Mesh.DrawInstanced(Instances);
+		}
+	}
+	private Dictionary<int,Batch> Frame {get; set;} = [];
+	public void Draw(Material material, Mesh mesh, Transform transform)  {
+		//TODO culling, might as well do it on cpu since we have to loop over everything anyway
+		var hc = HashCode.Combine(material.Id, mesh.Id);
+		if (!Frame.TryGetValue(hc, out var batch))
+			batch = Frame[hc] = new() {Material = material, Mesh = mesh};
+		batch.Instances.Add(transform);
+	}
 	public void Render() {
 		if (Game.Window.FramebufferSize.X == 0 || Game.Window.FramebufferSize.Y == 0)
 			return;
 		Instance.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 		Scene.RenderActive();
+		foreach (var batch in Frame.Values)
+			batch.Render();
+		Frame.Clear();
 	}
 }
