@@ -15,12 +15,12 @@ public class Texture {
 	}
 		
 	private readonly static Dictionary<int,Texture> Resident = [];
-	public unsafe static Texture LoadPalette(Resources system, string path) { //TODO shouldnt this be more generic, will we even use this for anything (might as well with big int16 sized one?), shouldnt our file types have headers
-		var hc = HashCode.Combine(system, path.ToLower(), "PALETTE");
+	public unsafe static Texture LoadPalette(string path) { //TODO shouldnt this be more generic, will we even use this for anything (might as well with big int16 sized one?), shouldnt our file types have headers
+		var hc = HashCode.Combine(path.ToLower(), "PALETTE");
 		if (Resident.TryGetValue(hc, out var et))
 			return et;
 		var timer = Stopwatch.StartNew();
-		var r = new BinaryReader(system.GetStream(path));
+		var r = new BinaryReader(ResourceSystem.GetStream(path)); //TODO null check this
 		r.ReadInt32(); //hash
 		var count = r.ReadByte();
 		var t = new Texture {
@@ -57,12 +57,12 @@ public class Texture {
 		Log.Info($"{path} load in {Math.Round(timer.Elapsed.TotalSeconds * 1000, 2)}ms");
 		return t;
 	}
-	public unsafe static Texture Load(Resources system, string path) { //TODO probably not a good idea to always assume 3d textures, but also we can determine that based on if depth is 1
-		var hc = HashCode.Combine(system, path.ToLower());
+	public unsafe static Texture Load(string path) { //TODO probably not a good idea to always assume 3d textures, but also we can determine that based on if depth is 1
+		var hc = HashCode.Combine(path.ToLower());
 		if (Resident.TryGetValue(hc, out var et))
 			return et;
 		var timer = Stopwatch.StartNew();
-		var r = new BinaryReader(system.GetStream(path));
+		var r = new BinaryReader(ResourceSystem.GetStream(path)); //TODO null check this
 		r.ReadInt32(); //hash
 		var t = new Texture {
 			Hash = hc,
@@ -102,7 +102,7 @@ public class Texture {
 			texture.Dispose();
 		Resident.Clear();
 	}
-	public static void Flush(Resources system, string path) {
+	public static void Flush(ResourceSystem system, string path) {
 		path = path.ToLower().Replace('\\', '/');
 		var hc1 = HashCode.Combine(system, path);
 		var hc2 = HashCode.Combine(system, path, "PALETTE");

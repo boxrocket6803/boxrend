@@ -10,13 +10,13 @@ public class Shader {
 	}
 
 	private readonly static Dictionary<int,Shader> Resident = [];
-	public static Shader Get(Resources system, string path, ShaderType type) {
-		var hash = HashCode.Combine(system.Folder, path.ToLower(), type);
+	public static Shader Get(string path, ShaderType type) {
+		var hash = HashCode.Combine(path.ToLower(), type);
 		if (Resident.TryGetValue(hash, out var es))
 			return es;
 		Log.Info($"compiling {path}");
 		var s = Graphics.Instance.CreateShader(type);
-		var glsl = system.ReadAllText(path);
+		var glsl = ResourceSystem.ReadText(path);
 		if (glsl == null)
 			return new Shader();
 		Graphics.Instance.ShaderSource(s, glsl);

@@ -1,5 +1,4 @@
 ﻿using Silk.NET.OpenGL;
-using System.Linq;
 
 public class Mesh {
 	public Guid Id = Guid.NewGuid();
@@ -12,7 +11,7 @@ public class Mesh {
 	public unsafe void DrawInstanced(List<Transform> transforms) {
 		//TODO bind data
 		Graphics.Instance.BindVertexArray(Handle);
-		Graphics.Instance.DrawElementsInstanced(PrimitiveType.Triangles, Count, DrawElementsType.UnsignedInt, (void*)0, (uint)transforms.Count());
+		Graphics.Instance.DrawElementsInstanced(PrimitiveType.Triangles, Count, DrawElementsType.UnsignedInt, (void*)0, (uint)transforms.Count);
 	}
 	public unsafe void Draw() {
 		Graphics.Instance.BindVertexArray(Handle);

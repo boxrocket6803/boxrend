@@ -4,27 +4,22 @@ using System.IO;
 public class Engine {
 	public IWindow Window {get; set;}
 	public string Directory {get; set;}
-	public Resources Core {get; set;}
-	public Resources Assets {get; set;}
 	public Graphics Graphics {get; set;}
 	public Audio Audio {get; set;}
 	public Input Input {get; set;}
 
 	public Scene Scene {get; set;}
 
-	public void Init(string title) {
+	public void Init() {
 		Directory = Path.GetDirectoryName(Environment.ProcessPath);
 		var test = Directory.EndsWith("source\\engine\\bin");
 		if (test) Directory = Directory.Replace("\\source\\engine\\bin", null);
 		Time.Update();
 
-		Core = new(this, "core");
-		Core.Init();
-		Assets = new(this, "assets"); //TODO replace all this with static init, asset system should handle looking for files in multiple directories
-		Assets.Init();
+		ResourceSystem.Init(this);
 		Window = Silk.NET.Windowing.Window.Create(WindowOptions.Default with {
 			Size = new(300, 1),
-			Title = title,
+			Title = "BOX_DRAW",
 			VSync = false
 		});
 		Window.Initialize();
@@ -50,8 +45,7 @@ public class Engine {
 	}
 
 	private void Update(double delta) {
-		Core.Update();
-		Assets.Update();
+		ResourceSystem.Update();
 		Time.Update();
 		Input.Update();
 		Scene.UpdateActive();

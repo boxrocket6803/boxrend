@@ -21,7 +21,7 @@ public class Graphics(Engine game) {
 		public Mesh Mesh {get; set;}
 		public Material Material {get; set;}
 		public List<Transform> Instances {get; set;} = [];
-		public void Render() {
+		public readonly void Render() {
 			Scene.Active.MainCamera.Update(Material);
 			Material.Bind();
 			Mesh.DrawInstanced(Instances);

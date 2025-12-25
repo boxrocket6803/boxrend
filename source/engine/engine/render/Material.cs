@@ -38,9 +38,9 @@ public class Material {
 
 	private readonly static Dictionary<int,Material> Resident = [];
 	private static Material Active {get; set;}
-	public static Material From(Resources system, string vert, string frag) {
-		var v = Shader.Get(system, vert, ShaderType.VertexShader);
-		var f = Shader.Get(system, frag, ShaderType.FragmentShader);
+	public static Material From(string vert, string frag) {
+		var v = Shader.Get(vert, ShaderType.VertexShader);
+		var f = Shader.Get(frag, ShaderType.FragmentShader);
 		return From(v, f);
 	}
 	public static Material From(Shader vert, Shader frag) {
