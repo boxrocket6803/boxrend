@@ -17,8 +17,8 @@
 		public virtual void Render() {}
 		public virtual void Dispose() => Scene.Objects.Remove(this);
 	}
-	public abstract class Camera {
-		public Scene Scene;
+	public class Camera {
+		public Scene Scene {get; set;}
 		public virtual void Update(Material program) {}
 	}
 
