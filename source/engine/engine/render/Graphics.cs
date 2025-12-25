@@ -2,8 +2,8 @@
 using Silk.NET.Windowing;
 using System.Diagnostics;
 
-public class Graphics(Game game) {
-	public readonly Game Game = game;
+public class Graphics(Engine game) {
+	public readonly Engine Game = game;
 	public static GL Instance {get; private set;}
 
 	public static void Init(IWindow window) {
@@ -22,6 +22,7 @@ public class Graphics(Game game) {
 		public Material Material {get; set;}
 		public List<Transform> Instances {get; set;} = [];
 		public void Render() {
+			Scene.Active.MainCamera.Update(Material);
 			Material.Bind();
 			Mesh.DrawInstanced(Instances);
 		}
@@ -36,6 +37,7 @@ public class Graphics(Game game) {
 	public void Render() {
 		if (Game.Window.FramebufferSize.X == 0 || Game.Window.FramebufferSize.Y == 0)
 			return;
+		//TODO get clear color from camera
 		Instance.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 		Scene.RenderActive();
 		foreach (var batch in Frame.Values)

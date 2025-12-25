@@ -2,8 +2,8 @@
 using Silk.NET.OpenAL;
 using System.IO;
 
-public class Audio(Game game) {
-	public Game Game = game;
+public class Audio(Engine game) {
+	public Engine Game = game;
 
 	public class Sound {
 		public bool Loop;

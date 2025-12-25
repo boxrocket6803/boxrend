@@ -1,13 +1,7 @@
 ﻿using Silk.NET.Windowing;
 using System.IO;
 
-public class Game {
-	static void Main() {
-		Game g = new();
-		g.Init();
-		g.Destroy();
-	}
-
+public class Engine {
 	public IWindow Window {get; set;}
 	public string Directory {get; set;}
 	public Resources Core {get; set;}
@@ -18,20 +12,19 @@ public class Game {
 
 	public Scene Scene {get; set;}
 
-	private void Init() {
+	public void Init(string title) {
 		Directory = Path.GetDirectoryName(Environment.ProcessPath);
-		var test = Directory == "E:\\engine\\source\\game\\bin";
-		if (test)
-			Directory = "E:\\engine";
+		var test = Directory.EndsWith("source\\engine\\bin");
+		if (test) Directory = Directory.Replace("\\source\\engine\\bin", null);
 		Time.Update();
 
 		Core = new(this, "core");
 		Core.Init();
-		Assets = new(this, "assets");
+		Assets = new(this, "assets"); //TODO replace all this with static init, asset system should handle looking for files in multiple directories
 		Assets.Init();
 		Window = Silk.NET.Windowing.Window.Create(WindowOptions.Default with {
 			Size = new(300, 1),
-			Title = "BOXDRAW",
+			Title = title,
 			VSync = false
 		});
 		Window.Initialize();
@@ -50,7 +43,10 @@ public class Game {
 		if (!test)
 			Window.WindowState = WindowState.Maximized;
 		Time.Update();
+	}
+	public void Run() {
 		Window.Run();
+		Destroy();
 	}
 
 	private void Update(double delta) {
@@ -62,5 +58,5 @@ public class Game {
 		Audio.Update();
 	}
 
-	private void Destroy()  => Window.Dispose();
+	private void Destroy() => Window.Dispose();
 }

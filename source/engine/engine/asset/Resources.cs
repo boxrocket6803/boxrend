@@ -1,8 +1,8 @@
 ﻿using System.IO;
 using System.IO.Compression;
 
-public class Resources(Game game, string folder) {
-	public readonly Game Game = game;
+public class Resources(Engine game, string folder) {
+	public readonly Engine Game = game;
 	public readonly string Folder = folder;
 
 	private bool Loose;

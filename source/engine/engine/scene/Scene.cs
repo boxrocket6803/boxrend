@@ -1,7 +1,7 @@
-﻿public class Scene(Game game) {
-	public Game Game = game;
+﻿public class Scene(Engine game) {
+	public Engine Game = game;
 
-	public class Object {
+	public abstract class Object {
 		public Scene Scene;
 		public Object() : this(Context) { }
 		public Object(Scene scene) {
@@ -17,7 +17,7 @@
 		public virtual void Render() {}
 		public virtual void Dispose() => Scene.Objects.Remove(this);
 	}
-	public class Camera {
+	public abstract class Camera {
 		public Scene Scene;
 		public virtual void Update(Material program) {}
 	}

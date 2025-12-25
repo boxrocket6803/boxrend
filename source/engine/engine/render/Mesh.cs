@@ -30,7 +30,6 @@ public class Mesh {
 		};
 		Graphics.Instance.BindVertexArray(m.Handle);
 
-		var vbo = Graphics.Instance.GenBuffer();
 		Graphics.Instance.BindBuffer(BufferTargetARB.ArrayBuffer, m.Handle);
 		fixed (float* buf = verticies)
 			Graphics.Instance.BufferData(BufferTargetARB.ArrayBuffer, (nuint)(verticies.Length * sizeof(float)), buf, BufferUsageARB.StaticDraw);
