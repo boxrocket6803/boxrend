@@ -60,7 +60,7 @@ public class Material {
 		return p;
 	}
 	public static void FlushAll() { //TODO should be per shader, which is of course really annoying
-		HashSet<uint> handles = new();
+		HashSet<uint> handles = [];
 		foreach (var program in Resident.Values) {
 			program.State.Clear();
 			handles.Add(program.Handle);

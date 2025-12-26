@@ -3,5 +3,5 @@
 	public struct ResourceBlock() {
 		public List<string> SearchPaths {get; set;} = [];
 	}
-	public ResourceBlock Resources {get; set;}
+	public ResourceBlock Resources {get; set;} = new();
 }

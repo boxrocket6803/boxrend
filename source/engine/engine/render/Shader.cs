@@ -16,7 +16,7 @@ public class Shader {
 			return es;
 		Log.Info($"compiling {path}");
 		var s = Graphics.Instance.CreateShader(type);
-		var glsl = ResourceSystem.ReadText(path);
+		var glsl = Assets.ReadText(path);
 		if (glsl == null)
 			return new Shader();
 		Graphics.Instance.ShaderSource(s, glsl);

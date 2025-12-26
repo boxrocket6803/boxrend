@@ -20,7 +20,7 @@ public class Texture {
 		if (Resident.TryGetValue(hc, out var et))
 			return et;
 		var timer = Stopwatch.StartNew();
-		var r = new BinaryReader(ResourceSystem.GetStream(path)); //TODO null check this
+		var r = new BinaryReader(Assets.GetStream(path)); //TODO null check this
 		r.ReadInt32(); //hash
 		var count = r.ReadByte();
 		var t = new Texture {
@@ -62,7 +62,7 @@ public class Texture {
 		if (Resident.TryGetValue(hc, out var et))
 			return et;
 		var timer = Stopwatch.StartNew();
-		var r = new BinaryReader(ResourceSystem.GetStream(path)); //TODO null check this
+		var r = new BinaryReader(Assets.GetStream(path)); //TODO null check this
 		r.ReadInt32(); //hash
 		var t = new Texture {
 			Hash = hc,
@@ -102,7 +102,7 @@ public class Texture {
 			texture.Dispose();
 		Resident.Clear();
 	}
-	public static void Flush(ResourceSystem system, string path) {
+	public static void Flush(Assets system, string path) {
 		path = path.ToLower().Replace('\\', '/');
 		var hc1 = HashCode.Combine(system, path);
 		var hc2 = HashCode.Combine(system, path, "PALETTE");

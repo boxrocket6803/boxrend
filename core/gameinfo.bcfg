@@ -1,7 +1,7 @@
-Title = "SKULL DRILL",
+Title = "TEST",
 Resources = {
-	SearchPaths = {
-		"skdr",
-		"core"
-	}
+	SearchPaths = [
+		"game",
+		"core",
+	]
 }

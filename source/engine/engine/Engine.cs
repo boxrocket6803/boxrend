@@ -16,10 +16,10 @@ public class Engine {
 		if (test) Directory = Directory.Replace("\\source\\engine\\bin", null);
 		Time.Update();
 
-		ResourceSystem.Init(this);
+		Assets.Init(this);
 		Window = Silk.NET.Windowing.Window.Create(WindowOptions.Default with {
 			Size = new(300, 1),
-			Title = "BOX_DRAW",
+			Title = Resource.Load<GameInfo>("gameinfo.bcfg")?.Title ?? "BOX_DRAW",
 			VSync = false
 		});
 		Window.Initialize();
@@ -38,6 +38,7 @@ public class Engine {
 		if (!test)
 			Window.WindowState = WindowState.Maximized;
 		Time.Update();
+		Log.Info($"engine init in {Math.Round(Time.RealNow * 1000, 2)}ms");
 	}
 	public void Run() {
 		Window.Run();
@@ -45,7 +46,7 @@ public class Engine {
 	}
 
 	private void Update(double delta) {
-		ResourceSystem.Update();
+		Assets.Update();
 		Time.Update();
 		Input.Update();
 		Scene.UpdateActive();
