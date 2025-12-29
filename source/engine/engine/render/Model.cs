@@ -35,7 +35,6 @@ public class Model {
 		var meshcount = f.ReadByte();
 		for (int i = 0; i < meshcount; i++) {
 			var chunk = new MeshChunk {Name = Encoding.ASCII.GetString(f.ReadBytes(f.ReadByte()))};
-			timer.Stop();
 			var mat = $"{Encoding.ASCII.GetString(f.ReadBytes(f.ReadByte()))}.bmat";
 			var full = string.Join('/', path.Split('/').SkipLast(1));
 			chunk.Material = Material.From(mat) ?? Material.From($"{full}/{mat}") ?? Material.From($"{full}/{path.Split('/').Last().Split('.')[0]}/{mat}");
@@ -43,7 +42,6 @@ public class Model {
 				chunk.Material = Material.From("shaders/vs_model.glsl", "shaders/fs_fallback.glsl");
 				Log.Error($"using fallback for missing {mat} (referenced in {path})");
 			}
-			timer.Start();
 			f.ReadByte(); //uv channel count
 			f.ReadByte(); //vertex color channel count
 			var indicies = new uint[f.ReadUInt32()];

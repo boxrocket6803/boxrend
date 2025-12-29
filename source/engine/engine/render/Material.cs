@@ -17,7 +17,6 @@ public class Material {
 
 	public Guid Id = Guid.NewGuid();
 	public uint Handle;
-	private readonly Dictionary<string,int> State = [];
 	private readonly Dictionary<string,object> Attributes = [];
 	
 	//TODO we should also be able to load these from files, json makes sense i think
@@ -31,9 +30,9 @@ public class Material {
 		Active = this;
 		foreach (var attribute in Attributes) {
 			var hc = attribute.Value.GetHashCode();
-			if (State.GetValueOrDefault(attribute.Key) == hc)
+			if (ProgState[Handle].GetValueOrDefault(attribute.Key) == hc)
 				continue;
-			State[attribute.Key] = hc;
+			ProgState[Handle][attribute.Key] = hc;
 			var location = Graphics.Instance.GetUniformLocation(Handle, attribute.Key);
 			if (attribute.Value is float flval) {
 				Graphics.Instance.Uniform1(location, flval);
@@ -57,6 +56,7 @@ public class Material {
 	}
 
 	private readonly static Dictionary<int,Material> Resident = [];
+	private readonly static Dictionary<uint,Dictionary<string, int>> ProgState = [];
 	private static Material Active {get; set;}
 	public static Material From(string file) => From(global::Resource.Load<Resource>(file));
 	public static Material From(Resource r) => r?.GetMaterial() ?? null;
@@ -81,16 +81,16 @@ public class Material {
 		Graphics.Instance.DetachShader(p.Handle, vert.Handle);
 		Graphics.Instance.DetachShader(p.Handle, frag.Handle);
 		Resident.Add(hc, p);
+		ProgState.Add(p.Handle, []);
 		return p;
 	}
 	public static void FlushAll() { //TODO should be per shader, which is of course really annoying
 		HashSet<uint> handles = [];
-		foreach (var program in Resident.Values) {
-			program.State.Clear();
+		foreach (var program in Resident.Values)
 			handles.Add(program.Handle);
-		}
 		foreach (var handle in handles)
 			Graphics.Instance.DeleteProgram(handle);
+		ProgState.Clear();
 		Resident.Clear();
 	}
 }
