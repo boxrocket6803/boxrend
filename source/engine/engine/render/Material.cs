@@ -1,6 +1,20 @@
 ﻿using Silk.NET.OpenGL;
 
 public class Material {
+	public class Resource : global::Resource {
+		public string Vertex {get; set;} = "shaders/vs_model.glsl";
+		public string Fragment {get; set;}
+		public Dictionary<string, Texture> Textures {get; set;} = [];
+		public Material GetMaterial() {
+			var m = From(Vertex, Fragment);
+			if (m is null)
+				return null;
+			foreach (var texture in Textures)
+				m.Set(texture.Key, texture.Value);
+			return m;
+		}
+	}
+
 	public Guid Id = Guid.NewGuid();
 	public uint Handle;
 	private readonly Dictionary<string,int> State = [];
@@ -44,12 +58,16 @@ public class Material {
 
 	private readonly static Dictionary<int,Material> Resident = [];
 	private static Material Active {get; set;}
+	public static Material From(string file) => From(global::Resource.Load<Resource>(file));
+	public static Material From(Resource r) => r?.GetMaterial() ?? null;
 	public static Material From(string vert, string frag) {
 		var v = Shader.Get(vert, ShaderType.VertexShader);
 		var f = Shader.Get(frag, ShaderType.FragmentShader);
 		return From(v, f);
 	}
 	public static Material From(Shader vert, Shader frag) {
+		if (vert is null || frag is null)
+			return null;
 		var hc = HashCode.Combine(vert.Hash, frag.Hash);
 		if (Resident.TryGetValue(hc, out var ep))
 			return new() {Handle = ep.Handle};

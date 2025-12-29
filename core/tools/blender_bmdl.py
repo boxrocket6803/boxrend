@@ -2,14 +2,15 @@ import bpy
 import struct
 import math
 import os
-path = r"E:\boxdraw\game\models\test.bmdl"
+path = r"E:\boxdraw\game\models\characters\human_base.bmdl"
 scale = 100
 
 with open(path, 'wb') as f:
     meshes = []
-    for mesh in bpy.context.selected_objects:
+    for mesh in bpy.context.selectable_objects:
         if mesh.type != 'MESH':
             continue
+        print(mesh)
         meshes.append(mesh)
     armature = None
     for mesh in meshes:
@@ -52,6 +53,7 @@ with open(path, 'wb') as f:
                 hc = hash((tri.vertices[i], uv.x, uv.y))
                 if hc in vertexdict:
                     indicies.append(vertexdict[hc])
+                    continue
                 vertex = {
                     "pos" : v.co * scale,
                     "normal" : v.normal,
@@ -68,10 +70,10 @@ with open(path, 'wb') as f:
         f.write(mesh.material_slots[0].name.encode('ascii')) #material name
         f.write(struct.pack('<B', 1)) #uv channel count
         f.write(struct.pack('<B', 0)) #vertex color channel count
-        f.write(struct.pack('<I', len(mesh.data.vertices))) #num indicies
+        f.write(struct.pack('<I', len(indicies))) #num indicies
         for index in indicies:
             f.write(struct.pack('<I', index))
-        f.write(struct.pack('<I', len(mesh.data.vertices))) #num verticies
+        f.write(struct.pack('<I', len(verticies))) #num verticies
         for vertex in verticies:
             f.write(struct.pack('<f', vertex["pos"].x))
             f.write(struct.pack('<f', vertex["pos"].y))
@@ -79,8 +81,8 @@ with open(path, 'wb') as f:
             f.write(struct.pack('<f', vertex["normal"].x))
             f.write(struct.pack('<f', vertex["normal"].y))
             f.write(struct.pack('<f', vertex["normal"].z))
-            f.write(struct.pack('<f', vertex["uv"].x))
-            f.write(struct.pack('<f', vertex["uv"].y))
+            f.write(struct.pack('<f',  vertex["uv"].x))
+            f.write(struct.pack('<f',1-vertex["uv"].y))
             f.write(struct.pack('<B', min(len(vertex["groups"]), 4))) #vertex group count
             for i in range(min(len(vertex["groups"]), 4)):
                 group = vertex["groups"][i]

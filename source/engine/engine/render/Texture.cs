@@ -58,11 +58,16 @@ public class Texture {
 		return t;
 	}
 	public unsafe static Texture Load(string path) { //TODO probably not a good idea to always assume 3d textures, but also we can determine that based on if depth is 1
+		if (path.EndsWith(".bpal")) //gross
+			return LoadPalette(path);
 		var hc = HashCode.Combine(path.ToLower());
 		if (Resident.TryGetValue(hc, out var et))
 			return et;
 		var timer = Stopwatch.StartNew();
-		var r = new BinaryReader(Assets.GetStream(path)); //TODO null check this
+		var f = Assets.GetStream(path);
+		if (f is null)
+			return null;
+		var r = new BinaryReader(f); //TODO null check this
 		r.ReadInt32(); //hash
 		var t = new Texture {
 			Hash = hc,

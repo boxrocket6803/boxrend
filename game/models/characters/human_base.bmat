@@ -1,2 +1,0 @@
-Vertex = "shaders/vs_model.shader",
-Fragment = "shaders/fs_util_uv.shader"

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 public class Resource {
@@ -13,10 +14,14 @@ public class Resource {
 	}
 	public static void Reload(string path) {
 		var timer = Stopwatch.StartNew();
-		static object Value(Type type, string value) {
+		object Value(Type type, string value) {
 			if (value == "null")
 				return null;
-			if (type == typeof(string))
+			if (type == typeof(Texture)) {
+				value = Regex.Replace(value, "^\"|\"$", "");
+				var full = string.Join('/', path.Split('/').SkipLast(1));
+				return Texture.Load(value) ?? Texture.Load($"{full}/{value}");
+			} if (type == typeof(string))
 				return Regex.Replace(value, "^\"|\"$", "");
 			if (Assets.GenericDataTypes.Contains(type))
 				return Convert.ChangeType(value, type);
@@ -29,13 +34,20 @@ public class Resource {
 							continue;
 						list.Add(Value(type.GenericTypeArguments[0], item.Trim()));
 					}
+				} else if (instance is IDictionary dict && type.GenericTypeArguments[0] == typeof(string)) {
+					foreach (var item in value.Split(',')) {
+						if (string.IsNullOrEmpty(item))
+							continue;
+						var pair = item.Split('=');
+						dict.Add(pair[0].Trim(), Value(type.GenericTypeArguments[1], pair[1].Trim()));
+					}
 				} else
-					Log.Error($"unkown enumerable type {type} encountered in Resource.Reload");
+					Log.Error($"unkown enumerable type {type} encountered while loading {path}");
 				return instance;
 			}
 			return Read(value, instance);
 		}
-		static object Read(string chunk, object target) {
+		object Read(string chunk, object target) {
 			if (string.IsNullOrEmpty(chunk))
 				return target;
 			var key = chunk.Split('=')[0].Trim();
@@ -63,14 +75,15 @@ public class Resource {
 			//Log.Info($"k = {key}");
 			//Log.Info($"v = {value}");
 			var property = target.GetType().GetProperty(key);
-			if (property is not null)
-				property.SetValue(target, Value(property.PropertyType, value));
+			property?.SetValue(target, Value(property.PropertyType, value));
 			if (next is not null)
 				Read(next, target);
 			return target;
 		}
-		Read(Assets.ReadText(path), Cache[path]);
+		var f = Assets.ReadText(path);
+		if (f is null)
+			return;
+		Read(f, Cache[path]);
 		Log.Info($"{path} load in {Math.Round(timer.Elapsed.TotalSeconds * 1000, 2)}ms");
-		//Log.Unfold(Cache[path]);
 	}
 }

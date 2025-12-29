@@ -1,4 +1,5 @@
 ﻿using Silk.NET.OpenGL;
+using System.Diagnostics;
 
 public class Shader {
 	public int Hash;
@@ -25,13 +26,18 @@ public class Shader {
 		}
 	}
 	public static Shader Get(string path, ShaderType type) {
+		if (string.IsNullOrEmpty(path))
+			return null;
 		var hash = HashCode.Combine(path.ToLower(), type);
 		if (Resident.TryGetValue(hash, out var es))
 			return es;
+		var timer = Stopwatch.StartNew();
 		var s = Graphics.Instance.CreateShader(type);
 		var glsl = Assets.ReadText(path);
-		if (glsl == null)
-			return new Shader();
+		if (glsl is null) {
+			Log.Error($"couldn't read file {path}");
+			return null;
+		}
 		Precompile(path, ref glsl);
 		Graphics.Instance.ShaderSource(s, glsl);
 		Graphics.Instance.CompileShader(s);
@@ -39,7 +45,7 @@ public class Shader {
 		if (status != (int)GLEnum.True)
 			Log.Exception($"{path} failed to compile: \n{Graphics.Instance.GetShaderInfoLog(s)}");
 		else
-			Log.Info($"compiled {path}");
+			Log.Info($"{path} compile in {Math.Round(timer.Elapsed.TotalSeconds * 1000, 2)}ms");
 		var ns = new Shader {
 			Hash = hash,
 			Handle = s

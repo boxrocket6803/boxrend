@@ -1,0 +1,5 @@
+Fragment = "shaders/fs_skinned_generic.glsl",
+Textures = {
+	palette = "default.bpal",
+	color = "human_base_color.btex",
+}

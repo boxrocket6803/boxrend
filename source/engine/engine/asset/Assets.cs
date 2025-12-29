@@ -28,6 +28,8 @@ public class Assets(Engine engine, string folder) {
 				Texture.Flush(this, item);
 			if (item.EndsWith(".bcfg"))
 				Resource.Reload(item);
+			if (item.EndsWith(".bmdl"))
+				Model.FlushAll();
 			if (item == "gameinfo.bcfg" && Folder == "core") {
 				Log.Info("restarting asset system");
 				return true;
@@ -126,7 +128,6 @@ public class Assets(Engine engine, string folder) {
 			if (str is not null)
 				return str;
 		}
-		Log.Error($"couldn't read file at {path}");
 		return null;
 	}
 	public static Stream GetStream(string path) {
@@ -135,7 +136,6 @@ public class Assets(Engine engine, string folder) {
 			if (str is not null)
 				return str;
 		}
-		Log.Error($"couldn't read file at {path}");
 		return null;
 	}
 }

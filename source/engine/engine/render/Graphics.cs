@@ -9,7 +9,7 @@ public class Graphics(Engine game) {
 	public static void Init(IWindow window) {
 		var timer = Stopwatch.StartNew();
 		Instance = window.CreateOpenGL();
-		Instance.ClearColor(System.Drawing.Color.DarkGray);
+		Instance.ClearColor(System.Drawing.Color.Black);
 		Instance.Enable(EnableCap.DepthTest);
 		Instance.DepthFunc(DepthFunction.Less);
 
