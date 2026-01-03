@@ -25,9 +25,9 @@ public class Material {
 	public void Set(string property, Texture value) => Attributes[property] = value;
 	public void Set(string property, Matrix4x4 value) => Attributes[property] = value;
 	public unsafe void Bind() {
-		if (Active != this)
+		if (Active != Handle)
 			Graphics.Instance.UseProgram(Handle);
-		Active = this;
+		Active = Handle;
 		foreach (var attribute in Attributes) {
 			var hc = attribute.Value.GetHashCode();
 			if (ProgState[Handle].GetValueOrDefault(attribute.Key) == hc)
@@ -57,7 +57,7 @@ public class Material {
 
 	private readonly static Dictionary<int,Material> Resident = [];
 	private readonly static Dictionary<uint,Dictionary<string, int>> ProgState = [];
-	private static Material Active {get; set;}
+	private static uint Active {get; set;}
 	public static Material From(string file) => From(global::Resource.Load<Resource>(file));
 	public static Material From(Resource r) => r?.GetMaterial() ?? null;
 	public static Material From(string vert, string frag) {
