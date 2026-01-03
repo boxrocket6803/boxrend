@@ -43,6 +43,12 @@
 
 	public HashSet<Object> Objects = [];
 	public Camera MainCamera;
+	public T Add<T>() where T : Object, new() {
+		Context = this;
+		var t = new T();
+		Context = Active;
+		return t;
+	}
 
 	public static Scene Active {get; set;}
 	public static Scene Context {get => field ?? Active; set => field = value;}

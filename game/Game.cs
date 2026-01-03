@@ -3,7 +3,7 @@
 
 	public static void Main() {
 		Engine.Init();
-		Scene.Active.Objects.Add(new GameManager());
+		Scene.Active.Add<GameManager>();
 		Engine.Run();
 	}
 }
