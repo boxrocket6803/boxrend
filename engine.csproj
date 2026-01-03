@@ -5,7 +5,7 @@
     <Nullable>disable</Nullable>
     <ImplicitUsings>disable</ImplicitUsings>
     <OutputType>WinExe</OutputType>
-    <StartupObject>Game</StartupObject>
+    <StartupObject>Engine</StartupObject>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
 	<AppendTargetFrameworkToOutputPath>False</AppendTargetFrameworkToOutputPath>

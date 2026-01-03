@@ -10,6 +10,13 @@ public class Engine {
 
 	public Scene Scene {get; set;}
 
+	public static void Main() {
+		var e = new Engine();
+		e.Init();
+		e.Run();
+		e.Destroy();
+	}
+
 	public void Init() {
 		Directory = Path.GetDirectoryName(Environment.ProcessPath);
 		var test = Directory.EndsWith("source\\engine\\bin");
@@ -40,6 +47,7 @@ public class Engine {
 		Time.Update();
 		Log.Info($"engine init in {Math.Round(Time.RealNow * 1000, 2)}ms");
 	}
+
 	public void Run() {
 		Window.Run();
 		Destroy();
