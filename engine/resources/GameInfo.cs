@@ -1,5 +1,5 @@
 ﻿public class GameInfo : Resource {
-	public string Title {get; set;} = "BOX_DRAW";
+	public string Title {get; set;} = "BOXREND";
 	public struct ResourceBlock() {
 		public List<string> SearchPaths {get; set;} = [];
 	}

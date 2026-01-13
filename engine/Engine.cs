@@ -26,7 +26,7 @@ public class Engine {
 		Assets.Init(this);
 		Window = Silk.NET.Windowing.Window.Create(WindowOptions.Default with {
 			Size = new(300, 1),
-			Title = Resource.Load<GameInfo>("gameinfo.bcfg")?.Title ?? "BOX_DRAW",
+			Title = Resource.Load<GameInfo>("gameinfo.bcfg")?.Title ?? "BOXREND",
 			VSync = false
 		});
 		Window.Initialize();
