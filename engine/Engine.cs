@@ -19,8 +19,8 @@ public class Engine {
 
 	public void Init() {
 		Directory = Path.GetDirectoryName(Environment.ProcessPath);
-		var test = Directory.EndsWith("source\\engine\\bin");
-		if (test) Directory = Directory.Replace("\\source\\engine\\bin", null);
+		var test = Directory.EndsWith("source\\engine\\bin") || Directory.EndsWith("source\\game\\bin");
+		if (test) Directory = Directory.Replace("\\source\\engine\\bin", null).Replace("\\source\\game\\bin", null);
 		Time.Update();
 
 		Assets.Init(this);
