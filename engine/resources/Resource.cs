@@ -8,7 +8,6 @@
 		resource = new T();
 		if (!resource.Load(path))
 			resource = null;
-		Log.Error($"added {path}");
 		Assets.Resources[path] = resource;
 		return resource;
 	}
