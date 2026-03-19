@@ -3,12 +3,8 @@ using Silk.NET.Windowing;
 
 public class Input {
 	private IInputContext Context;
-	private readonly Dictionary<string, MouseButton> MouseMapping = new() { //TODO load this from a file
-		{"DRAG", MouseButton.Middle},
-	};
-	private readonly Dictionary<string, Key> KeyMapping = new() { //TODO load this from a file
-
-	};
+	private readonly Dictionary<string, MouseButton> MouseMapping = []; //TODO load these from a file (maybe just whole class?)
+	private readonly Dictionary<string, Key> KeyMapping = [];
 	private static readonly HashSet<string> InternalPressed = [];
 	private static readonly HashSet<string> InternalDown = [];
 	private static readonly HashSet<string> InternalReleased = [];
