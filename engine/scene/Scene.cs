@@ -13,9 +13,8 @@
 
 		public virtual void OnCreate() {}
 		public virtual void OnUpdate() {}
-		public virtual void Flush() {}
 		public virtual void Render() {}
-		public virtual void Dispose() => Scene.Objects.Remove(this);
+		public virtual void Destroy() => Scene.Objects.Remove(this);
 	}
 	public class Camera {
 		public Scene Scene {get; set;}
@@ -64,10 +63,5 @@
 		Active.MainCamera.Scene = Active;
 		foreach (var sceneobject in Active.Objects)
 			sceneobject.Render();
-	}
-	public static void FlushActive() {
-		Context = Active;
-		foreach (var sceneobject in Active.Objects)
-			sceneobject.Flush();
 	}
 }

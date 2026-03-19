@@ -8,7 +8,7 @@ public static class Log {
 		Trace.WriteLine(str);
 	}
 
-	public static void Unfold(object message) { //this should probably be moved into Resource as a serializer
+	public static void Unfold(object message) { //this should probably be moved into Config as a serializer
 		var str = $"{message.GetType()}:";
 		static string Value(object value, Type type, string tab) {
 			if (type == typeof(string))
@@ -26,7 +26,7 @@ public static class Log {
 					str = $"{str[..^1]}\n{tab}";
 				return $"{str}]";
 			}
-			if (Assets.GenericDataTypes.Contains(type))
+			if (Trivia.GenericDataTypes.Contains(type))
 				return value.ToString();
 			return $"{{{Pair(value, tab+'\t')}\n{tab}}}";
 		}

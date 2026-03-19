@@ -1,4 +1,4 @@
-﻿public class GameInfo : Resource {
+﻿public class GameInfo : Config {
 	public string Title {get; set;} = "BOXREND";
 	public struct ResourceBlock() {
 		public List<string> SearchPaths {get; set;} = [];

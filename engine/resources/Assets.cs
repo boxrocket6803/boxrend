@@ -1,11 +1,12 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 
 public class Assets(Engine engine, string folder) {
 	public readonly Engine Engine = engine;
 	public readonly string Folder = folder;
+	public static Dictionary<string, Resource> Resources {get; set;} = [];
+	private static List<Assets> SearchPaths {get; set;} = [];
 	private bool Loose;
 	private ZipArchive Package;
 	private FileSystemWatcher Watcher;
@@ -19,23 +20,16 @@ public class Assets(Engine engine, string folder) {
 				File.Open(Path.Combine([Engine.Directory, Folder, item]), FileMode.Open).Close();
 		} catch {return false;}
 		Reload();
-		foreach (var item in HotloadList) { //TODO better system for this
-			if (item.EndsWith(".glsl")) {
-				Material.FlushAll();
-				Shader.FlushAll();
-			}
-			if (item.EndsWith(".btex") || item.EndsWith(".bpal"))
-				Texture.Flush(this, item);
-			if (item.EndsWith(".bcfg"))
-				Resource.Reload(item);
-			if (item.EndsWith(".bmdl"))
-				Model.FlushAll();
-			if (item == "gameinfo.bcfg" && Folder == "core") {
+		foreach (var item in HotloadList) {
+			var path = item.Replace('\\', '/');
+			if (Resources.TryGetValue(path, out var r))
+				r.Load(path);
+			if (path == "gameinfo.bcfg" && Folder == "core") {
 				Log.Info("restarting asset system");
 				return true;
 			}
 		}
-		Scene.FlushActive();
+		Material.Flush();
 		HotloadList.Clear();
 		return false;
 	}
@@ -71,20 +65,14 @@ public class Assets(Engine engine, string folder) {
 		return Package?.GetEntry(path)?.Open() ?? null;
 	}
 
-	public static readonly HashSet<Type> GenericDataTypes = [ //TODO seems like thered be a better way to do this
-		typeof(bool), typeof(char), typeof(sbyte), typeof(byte),
-		typeof(short), typeof(ushort), typeof(int), typeof(uint),
-		typeof(long), typeof(ulong), typeof(float), typeof(double),
-		typeof(decimal), typeof(DateTime), typeof(Enum)
-	];
-	private static List<Assets> SearchPaths {get; set;} = [];
 	public static void Init(Engine engine) {
 		var timer = Stopwatch.StartNew();
+		Resources.Clear();
 		SearchPaths.Clear();
 		Assets core = new(engine, "core");
 		core.Reload();
 		SearchPaths.Add(core);
-		var gameinfo = Resource.Load<GameInfo>("gameinfo.bcfg");
+		var gameinfo = Config.Load<GameInfo>("gameinfo.bcfg");
 		if (gameinfo is null || gameinfo.Resources.SearchPaths is null) {
 			Log.Error("core/gameinfo.bcfg missing or Resources.SearchPaths invalid!");
 			Log.Info($"mounting\n + 'core'");
@@ -109,6 +97,7 @@ public class Assets(Engine engine, string folder) {
 		}
 		Log.Info($"assets init in {Math.Round(timer.Elapsed.TotalSeconds * 1000, 2)}ms");
 	}
+
 	public static void Update() {
 		var reset = false;
 		foreach (var dir in SearchPaths)
@@ -118,10 +107,11 @@ public class Assets(Engine engine, string folder) {
 		var engine = SearchPaths.First().Engine;
 		Init(engine);
 		engine.Window.Title = Resource.Load<GameInfo>("gameinfo.bcfg").Title;
-		Material.FlushAll();
-		Shader.FlushAll();
-		Texture.FlushAll();
+		foreach (var r in Resources)
+			r.Value.Load(r.Key);
+		Material.Flush();
 	}
+
 	public static string ReadText(string path) {
 		foreach (var dir in SearchPaths) {
 			var str = dir.Text(path);

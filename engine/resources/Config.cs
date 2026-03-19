@@ -1,18 +1,9 @@
 ﻿using System.Collections;
 using System.Diagnostics;
-using System.Linq;
 using System.Text.RegularExpressions;
 
-public class Resource {
-	private static Dictionary<string,object> Cache {get; set;} = [];
-	public static T Load<T>(string path) where T : Resource, new() { //TODO cache this, need to update the classes on reload not replace them so refs dont break
-		if (Cache.TryGetValue(path, out var r) && r is T resource)
-			return resource;
-		Cache[path] = new T();
-		Reload(path);
-		return (T)Cache[path];
-	}
-	public static void Reload(string path) {
+public class Config : Resource {
+	public override bool Load(string path) {
 		var timer = Stopwatch.StartNew();
 		object Value(Type type, string value) {
 			if (value.Last() == ',')
@@ -22,10 +13,10 @@ public class Resource {
 			if (type == typeof(Texture)) {
 				value = Regex.Replace(value, "^\"|\"$", "");
 				var full = string.Join('/', path.Split('/').SkipLast(1));
-				return Texture.Load(value) ?? Texture.Load($"{full}/{value}");
+				return Load<Texture>(value) ?? Load<Texture>($"{full}/{value}");
 			} if (type == typeof(string))
 				return Regex.Replace(value, "^\"|\"$", "");
-			if (Assets.GenericDataTypes.Contains(type))
+			if (Trivia.GenericDataTypes.Contains(type))
 				return Convert.ChangeType(value, type);
 			var instance = type.GetConstructor([]).Invoke([]);
 			value = value[1..^1].Trim();
@@ -84,8 +75,9 @@ public class Resource {
 		}
 		var f = Assets.ReadText(path);
 		if (f is null)
-			return;
-		Read(f, Cache[path]);
+			return false;
+		Read(f, this);
 		Log.Info($"{path} load in {Math.Round(timer.Elapsed.TotalSeconds * 1000, 2)}ms");
+		return true;
 	}
 }

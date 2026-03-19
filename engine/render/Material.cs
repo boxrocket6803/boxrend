@@ -1,8 +1,7 @@
 ﻿using Silk.NET.OpenGL;
-using System.Reflection.Metadata;
 
 public class Material {
-	public class Resource : global::Resource {
+	public class Resource : Config { //TODO this should probably be part of the main class
 		public string Vertex {get; set;} = "shaders/vs_model.glsl";
 		public string Depth {get; set;} = "shaders/ds_opaque.glsl";
 		public string Fragment {get; set;}
@@ -18,8 +17,11 @@ public class Material {
 	}
 
 	public Guid Id = Guid.NewGuid();
-	public uint DepthHandle;
-	public uint ColorHandle;
+	private uint DepthHandle;
+	private uint ColorHandle;
+	public Shader Vertex;
+	public Shader Color;
+	public Shader Depth;
 	public uint Handle => Graphics.Stage == Graphics.RenderStage.Depth ? DepthHandle : ColorHandle;
 	private readonly Dictionary<string,object> Attributes = [];
 	
@@ -41,11 +43,13 @@ public class Material {
 			SetUniform(Handle, attribute.Key, attribute.Value);
 		Scene.Active.MainCamera.Update(this);
 	}
-	private unsafe void SetUniform(uint handle, string property, object value) {
+	private static unsafe void SetUniform(uint handle, string property, object value) {
 		var hc = value.GetHashCode();
-		if (ProgState[handle].GetValueOrDefault(property) == hc)
+		if (!ProgState.TryGetValue(handle, out var state))
+			state = ProgState[handle] = [];
+		if (state.GetValueOrDefault(property) == hc)
 			return;
-		ProgState[handle][property] = hc;
+		state[property] = hc;
 		var location = Graphics.Instance.GetUniformLocation(handle, property);
 		if (value is float flval) {
 			Graphics.Instance.Uniform1(location, flval);
@@ -65,36 +69,49 @@ public class Material {
 			return;
 		}
 	}
+	private void Link() {
+		if (ColorHandle == 0)
+			ColorHandle = Graphics.Instance.CreateProgram();
+		Link(ColorHandle, Vertex.Handle, Color.Handle);
+		if (DepthHandle == 0)
+			DepthHandle = Graphics.Instance.CreateProgram();
+		Link(DepthHandle, Vertex.Handle, Depth.Handle);
+	}
 
 	private readonly static Dictionary<int,Material> Resident = [];
 	private readonly static Dictionary<uint,Dictionary<string, int>> ProgState = [];
 	private static uint Active {get; set;}
-	public static Material From(string file) => From(global::Resource.Load<Resource>(file));
+	public static Material From(string file) => From(Resource.Load<Resource>(file));
 	public static Material From(Resource r) => r?.GetMaterial() ?? null;
 	public static Material From(string vert, string frag, string depth) {
 		if (vert is null || frag is null || depth is null)
 			return null;
-		var v = Shader.Get(vert, ShaderType.VertexShader);
-		var f = Shader.Get(frag, ShaderType.FragmentShader);
-		var d = Shader.Get(depth, ShaderType.FragmentShader);
+		var v = Resource.Load<Shader.Vertex>(vert);
+		var f = Resource.Load<Shader.Fragment>(frag);
+		var d = Resource.Load<Shader.Fragment>(depth);
 		return From(v, f, d);
 	}
-	public static Material From(Shader vert, Shader frag, Shader depth) {
-		if (vert is null || frag is null || depth is null)
+	public static Material From(Shader vert, Shader color, Shader depth) {
+		if (vert is null || color is null || depth is null)
 			return null;
-		var hc = HashCode.Combine(vert.Hash, frag.Hash, depth.Hash);
-		if (Resident.TryGetValue(hc, out var ep))
-			return new() {ColorHandle = ep.ColorHandle};
-		var p = new Material {
-			ColorHandle = Graphics.Instance.CreateProgram(),
-			DepthHandle = Graphics.Instance.CreateProgram()
+		var hc = HashCode.Combine(vert, color, depth);
+		if (Resident.TryGetValue(hc, out var m)) {
+			return new() {
+				Vertex = m.Vertex,
+				Color = m.Color,
+				Depth = m.Depth,
+				DepthHandle = m.DepthHandle,
+				ColorHandle = m.ColorHandle
+			};
+		}
+		m = new() {
+			Vertex = vert,
+			Color = color,
+			Depth = depth
 		};
-		Link(p.ColorHandle, vert.Handle, frag.Handle);
-		Link(p.DepthHandle, vert.Handle, depth.Handle);
-		Resident.Add(hc, p);
-		ProgState.Add(p.ColorHandle, []);
-		ProgState.Add(p.DepthHandle, []);
-		return p;
+		m.Link();
+		Resident.Add(hc, m);
+		return m;
 	}
 	private static void Link(uint handle, uint vert, uint frag) {
 		Graphics.Instance.AttachShader(handle, vert);
@@ -106,13 +123,10 @@ public class Material {
 		Graphics.Instance.DetachShader(handle, vert);
 		Graphics.Instance.DetachShader(handle, frag);
 	}
-	public static void FlushAll() { //TODO should be per shader, which is of course really annoying
-		HashSet<uint> handles = [];
-		foreach (var program in Resident.Values)
-			handles.Add(program.ColorHandle);
-		foreach (var handle in handles)
-			Graphics.Instance.DeleteProgram(handle);
+	public static void Flush() {
 		ProgState.Clear();
-		Resident.Clear();
+		Active = 0;
+		foreach (var m in Resident.Values)
+			m.Link();
 	}
 }

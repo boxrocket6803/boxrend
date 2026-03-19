@@ -1,9 +1,8 @@
 ﻿using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
 
-public class Model {
+public class Model : Resource {
 	//TODO skeleton
 	private struct MeshChunk {
 		public string Name {get; set;}
@@ -23,23 +22,17 @@ public class Model {
 		}
 	}
 
-	private static Dictionary<string,Model> Resident {get; set;} = [];
-	public static Model Load(string path) {
-		if (Resident.TryGetValue(path, out var model))
-			return model;
+	public override bool Load(string path) {
 		var timer = Stopwatch.StartNew();
 		var r = Assets.GetStream(path);
 		if (r is null) {
 			if (path == "models/error.bmdl")
-				return null; //shit
+				return false; //shit
 			Log.Error($"using fallback for missing {path}");
-			model = Load("models/error.bmdl");
-			Resident.Add(path, model);
-			return model;
+			return Load("models/error.bmdl");
 		}
 		var f = new BinaryReader(r);
 		f.ReadByte(); //file type, always 0 for now
-		model = new Model();
 		var bonecount = f.ReadUInt16();
 		for (int i = 0; i < bonecount; i++) {
 			Encoding.ASCII.GetString(f.ReadBytes(f.ReadByte())); //name
@@ -48,7 +41,10 @@ public class Model {
 		}
 		var meshcount = f.ReadByte();
 		for (int i = 0; i < meshcount; i++) {
-			var chunk = new MeshChunk {Name = Encoding.ASCII.GetString(f.ReadBytes(f.ReadByte()))};
+			var chunk = new MeshChunk {
+				Name = Encoding.ASCII.GetString(f.ReadBytes(f.ReadByte())),
+				Mesh = new()
+			};
 			var mat = $"{Encoding.ASCII.GetString(f.ReadBytes(f.ReadByte()))}.bmat";
 			var full = string.Join('/', path.Split('/').SkipLast(1));
 			chunk.Material = Material.From(mat) ?? Material.From($"{full}/{mat}") ?? Material.From($"{full}/{path.Split('/').Last().Split('.')[0]}/{mat}");
@@ -72,13 +68,11 @@ public class Model {
 					f.ReadSingle(); //weight
 				}
 			}
-			chunk.Mesh = Mesh.From(vertices, indicies);
-			model.Meshes.Add(chunk);
+			chunk.Mesh.Load(vertices, indicies);
+			Meshes.Add(chunk);
 		}
 		f.Close();
-		Resident.Add(path, model);
 		Log.Info($"{path} load in {Math.Round(timer.Elapsed.TotalSeconds * 1000, 2)}ms");
-		return model;
+		return true;
 	}
-	public static void FlushAll() => Resident.Clear();
 }

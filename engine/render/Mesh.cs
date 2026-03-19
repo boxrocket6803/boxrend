@@ -24,21 +24,10 @@ public class Mesh {
 		Graphics.Instance.DrawElements(PrimitiveType.Triangles, Count, DrawElementsType.UnsignedInt, (void*)0);
 	}
 
-	public static Mesh Sprite {get; set;}
-	public static void Init() {
-		Sprite = From([
-		 1, 1,0,  0,0,1,  1,0,
-		 1,-1,0,  0,0,1,  1,1,
-		-1,-1,0,  0,0,1,  0,1,
-		-1, 1,0,  0,0,1,  0,0,
-		], [0,1,3,1,2,3]);
-	}
-	public unsafe static Mesh From(float[] verticies, uint[] indicies) {
-		var m = new Mesh {
-			Handle = Graphics.Instance.GenVertexArray(),
-			Count = (uint)indicies.Length
-		};
-		Graphics.Instance.BindVertexArray(m.Handle);
+	public unsafe void Load(float[] verticies, uint[] indicies) {
+		Handle = Graphics.Instance.GenVertexArray();
+		Count = (uint)indicies.Length;
+		Graphics.Instance.BindVertexArray(Handle);
 
 		var vbo = Graphics.Instance.GenBuffer();
 		Graphics.Instance.BindBuffer(BufferTargetARB.ArrayBuffer, vbo);
@@ -60,7 +49,16 @@ public class Mesh {
 		Graphics.Instance.BindVertexArray(0);
 		Graphics.Instance.BindBuffer(BufferTargetARB.ArrayBuffer, 0);
 		Graphics.Instance.BindBuffer(BufferTargetARB.ElementArrayBuffer, 0);
+	}
 
-		return m;
+	public static Mesh Sprite {get; set;}
+	public static void Init() {
+		Sprite ??= new();
+		Sprite.Load([
+		 1, 1,0,  0,0,1,  1,0,
+		 1,-1,0,  0,0,1,  1,1,
+		-1,-1,0,  0,0,1,  0,1,
+		-1, 1,0,  0,0,1,  0,0,
+		], [0,1,3,1,2,3]);
 	}
 }
