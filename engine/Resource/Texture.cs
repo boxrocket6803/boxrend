@@ -1,8 +1,10 @@
-﻿using System.Diagnostics;
+﻿namespace Resource;
+
+using System.Diagnostics;
 using System.IO;
 using Silk.NET.OpenGL;
 
-public class Texture : Resource {
+public class Texture : Base {
 	public uint Width;
 	public uint Height;
 	public uint Depth;
@@ -13,7 +15,7 @@ public class Texture : Resource {
 		var f = Assets.GetStream(path);
 		if (f is null)
 			return false;
-		var r = new BinaryReader(f); //TODO null check this
+		var r = new BinaryReader(f);
 		if (r is null)
 			return false;
 		r.ReadInt32(); //hash

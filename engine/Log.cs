@@ -26,7 +26,7 @@ public static class Log {
 					str = $"{str[..^1]}\n{tab}";
 				return $"{str}]";
 			}
-			if (Trivia.GenericDataTypes.Contains(type))
+			if (Resource.Config.Base.GenericDataTypes.Contains(type))
 				return value.ToString();
 			return $"{{{Pair(value, tab+'\t')}\n{tab}}}";
 		}

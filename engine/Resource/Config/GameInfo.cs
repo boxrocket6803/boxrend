@@ -1,4 +1,6 @@
-﻿public class GameInfo : Config {
+﻿namespace Resource.Config;
+
+public class GameInfo : Base {
 	public string Title {get; set;} = "BOXREND";
 	public struct ResourceBlock() {
 		public List<string> SearchPaths {get; set;} = [];

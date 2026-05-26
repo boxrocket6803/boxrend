@@ -1,7 +1,7 @@
 ﻿using Silk.NET.OpenGL;
 
-public class Material {
-	public class Resource : Config { //TODO this should probably be part of the main class
+public class Material { //TODO use Resource base class?
+	public class Resource : global::Resource.Config.Base { //TODO this should probably be part of the main class
 		public string Vertex {get; set;} = "shaders/vs_model.glsl";
 		public string Depth {get; set;} = "shaders/ds_opaque.glsl";
 		public string Fragment {get; set;}
@@ -19,9 +19,9 @@ public class Material {
 	public Guid Id = Guid.NewGuid();
 	private uint DepthHandle;
 	private uint ColorHandle;
-	public Shader Vertex;
-	public Shader Color;
-	public Shader Depth;
+	public global::Resource.Shader Vertex;
+	public global::Resource.Shader Color;
+	public global::Resource.Shader Depth;
 	public uint Handle => Graphics.Stage == Graphics.RenderStage.Depth ? DepthHandle : ColorHandle;
 	private readonly Dictionary<string,object> Attributes = [];
 	
@@ -41,7 +41,7 @@ public class Material {
 		Active = Handle;
 		foreach (var attribute in Attributes)
 			SetUniform(Handle, attribute.Key, attribute.Value);
-		Scene.Active.MainCamera.Update(this);
+		Scene.Manager.Active.MainCamera.Update(this);
 	}
 	private static unsafe void SetUniform(uint handle, string property, object value) {
 		var hc = value.GetHashCode();
@@ -81,17 +81,17 @@ public class Material {
 	private readonly static Dictionary<int,Material> Resident = [];
 	private readonly static Dictionary<uint,Dictionary<string, int>> ProgState = [];
 	private static uint Active {get; set;}
-	public static Material From(string file) => From(Resource.Load<Resource>(file));
+	public static Material From(string file) => From(global::Resource.Base.Load<Resource>(file));
 	public static Material From(Resource r) => r?.GetMaterial() ?? null;
 	public static Material From(string vert, string frag, string depth) {
 		if (vert is null || frag is null || depth is null)
 			return null;
-		var v = Resource.Load<Shader.Vertex>(vert);
-		var f = Resource.Load<Shader.Fragment>(frag);
-		var d = Resource.Load<Shader.Fragment>(depth);
+		var v = Assets.Load<global::Resource.Shader.Vertex>(vert);
+		var f = Assets.Load<global::Resource.Shader.Fragment>(frag);
+		var d = Assets.Load<global::Resource.Shader.Fragment>(depth);
 		return From(v, f, d);
 	}
-	public static Material From(Shader vert, Shader color, Shader depth) {
+	public static Material From(global::Resource.Shader vert, global::Resource.Shader color, global::Resource.Shader depth) {
 		if (vert is null || color is null || depth is null)
 			return null;
 		var hc = HashCode.Combine(vert, color, depth);

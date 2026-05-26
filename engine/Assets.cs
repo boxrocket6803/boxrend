@@ -5,7 +5,7 @@ using System.IO.Compression;
 public class Assets(Engine engine, string folder) {
 	public readonly Engine Engine = engine;
 	public readonly string Folder = folder;
-	public static Dictionary<string, Resource> Resources {get; set;} = [];
+	public static Dictionary<string, Resource.Base> Resources {get; set;} = [];
 	private static List<Assets> SearchPaths {get; set;} = [];
 	private bool Loose;
 	private ZipArchive Package;
@@ -72,7 +72,7 @@ public class Assets(Engine engine, string folder) {
 		Assets core = new(engine, "core");
 		core.Reload();
 		SearchPaths.Add(core);
-		var gameinfo = Config.Load<GameInfo>("gameinfo.bcfg");
+		var gameinfo = Load<Resource.Config.GameInfo>("gameinfo.bcfg");
 		if (gameinfo is null || gameinfo.Resources.SearchPaths is null) {
 			Log.Error("core/gameinfo.bcfg missing or Resources.SearchPaths invalid!");
 			Log.Info($"mounting\n + 'core'");
@@ -106,13 +106,15 @@ public class Assets(Engine engine, string folder) {
 			return;
 		var engine = SearchPaths.First().Engine;
 		Init(engine);
-		engine.Window.Title = Resource.Load<GameInfo>("gameinfo.bcfg").Title;
+		engine.Window.Title = Load<Resource.Config.GameInfo>("gameinfo.bcfg").Title;
 		foreach (var r in Resources)
 			r.Value.Load(r.Key);
 		Material.Flush();
 	}
 
-	public static string ReadText(string path) {
+	public static T Load<T>(string path) where T : Resource.Base, new() => Resource.Base.Load<T>(path);
+
+	public static string ReadText(string path) { //TODO check if these are used
 		foreach (var dir in SearchPaths) {
 			var str = dir.Text(path);
 			if (str is not null)

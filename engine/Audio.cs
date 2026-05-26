@@ -2,7 +2,7 @@
 using Silk.NET.OpenAL;
 using System.IO;
 
-public class Audio(Engine game) {
+public class Audio(Engine game) { //TODO this need an overhaul
 	public Engine Game = game;
 
 	public class Sound {
@@ -88,7 +88,7 @@ public class Audio(Engine game) {
 		Instance.SetListenerProperty(ListenerFloat.Gain, 3);
 	}
 
-	public void SetAmbient(string name, byte[] file) {
+	public void SetAmbient(string name, byte[] file) { //ew
 		CurrentAmbience = name;
 		Ambient = Sound.Load(Instance, file);
 		Ambient.Loop = true;

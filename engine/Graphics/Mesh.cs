@@ -1,6 +1,6 @@
 ﻿using Silk.NET.OpenGL;
 
-public class Mesh {
+public class Mesh { //should this even be seperate from model?
 	public Guid Id = Guid.NewGuid();
 	public uint Handle;
 	public uint Count;

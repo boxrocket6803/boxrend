@@ -58,22 +58,22 @@ public class Graphics(Engine game) {
 		
 		Stage = RenderStage.Submit;
 		Frame.Clear();
-		Scene.RenderActive();
+		Scene.Manager.RenderActive();
 		//TODO sort batches by distance
 
 		Stage = RenderStage.Depth;
 		//TODO shadows
 		foreach (var batch in Frame.Values)
 			batch.Render();
-		Scene.RenderActive();
+		Scene.Manager.RenderActive();
 
 		Stage = RenderStage.Forward;
 		foreach (var batch in Frame.Values)
 			batch.Render();
-		Scene.RenderActive();
+		Scene.Manager.RenderActive();
 
 		Stage = RenderStage.Post;
-		Scene.RenderActive();
+		Scene.Manager.RenderActive();
 		//TODO collect and render post process layers
 
 		Stage = RenderStage.Idle;

@@ -1,7 +1,9 @@
-﻿public abstract class Resource {
+﻿namespace Resource;
+
+public abstract class Base {
 	public virtual bool Load(string path) => false;
 
-	public static T Load<T>(string path) where T : Resource, new() {
+	public static T Load<T>(string path) where T : Base, new() {
 		path = path.Replace('\\', '/');
 		if (Assets.Resources.TryGetValue(path, out var r) && r is T resource)
 			return resource;

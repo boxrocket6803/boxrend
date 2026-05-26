@@ -1,8 +1,17 @@
-﻿using System.Collections;
+﻿namespace Resource.Config;
+
+using System.Collections;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
-public class Config : Resource {
+public class Base : Resource.Base {
+	public static readonly HashSet<Type> GenericDataTypes = [ //TODO seems like thered be a better way to do this
+		typeof(bool), typeof(char), typeof(sbyte), typeof(byte),
+		typeof(short), typeof(ushort), typeof(int), typeof(uint),
+		typeof(long), typeof(ulong), typeof(float), typeof(double),
+		typeof(decimal), typeof(DateTime), typeof(Enum)
+	];
+
 	public override bool Load(string path) {
 		var timer = Stopwatch.StartNew();
 		object Value(Type type, string value) {
@@ -16,7 +25,7 @@ public class Config : Resource {
 				return Load<Texture>(value) ?? Load<Texture>($"{full}/{value}");
 			} if (type == typeof(string))
 				return Regex.Replace(value, "^\"|\"$", "");
-			if (Trivia.GenericDataTypes.Contains(type))
+			if (GenericDataTypes.Contains(type))
 				return Convert.ChangeType(value, type);
 			var instance = type.GetConstructor([]).Invoke([]);
 			value = value[1..^1].Trim();

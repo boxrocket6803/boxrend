@@ -1,7 +1,9 @@
-﻿using Silk.NET.OpenGL;
+﻿namespace Resource;
+
+using Silk.NET.OpenGL;
 using System.Diagnostics;
 
-public abstract class Shader : Resource {
+public abstract class Shader : Base {
 	public class Vertex : Shader {public override ShaderType Type => ShaderType.VertexShader;}
 	public class Fragment : Shader {public override ShaderType Type => ShaderType.FragmentShader;}
 

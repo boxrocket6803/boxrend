@@ -1,15 +1,17 @@
-﻿using System.Diagnostics;
+﻿namespace Resource;
+
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-public class Model : Resource {
+public class Model : Base {
 	//TODO skeleton
-	private struct MeshChunk {
+	private struct DrawCall {
 		public string Name {get; set;}
 		public Material Material {get; set;}
 		public Mesh Mesh {get; set;}
 	}
-	private List<MeshChunk> Meshes {get; set;} = [];
+	private List<DrawCall> Meshes {get; set;} = [];
 	public void Draw(Transform transform) {
 		if (Graphics.Stage == Graphics.RenderStage.Submit) {
 			foreach (var chunk in Meshes)
@@ -41,7 +43,7 @@ public class Model : Resource {
 		}
 		var meshcount = f.ReadByte();
 		for (int i = 0; i < meshcount; i++) {
-			var chunk = new MeshChunk {
+			var chunk = new DrawCall {
 				Name = Encoding.ASCII.GetString(f.ReadBytes(f.ReadByte())),
 				Mesh = new()
 			};

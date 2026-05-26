@@ -8,8 +8,6 @@ public class Engine {
 	public Audio Audio {get; set;}
 	public Input Input {get; set;}
 
-	public Scene Scene {get; set;}
-
 	public static void Main() {
 		var e = new Engine();
 		e.Init();
@@ -32,7 +30,7 @@ public class Engine {
 		Assets.Init(this);
 		Window = Silk.NET.Windowing.Window.Create(WindowOptions.Default with {
 			Size = new(300, 1),
-			Title = Resource.Load<GameInfo>("gameinfo.bcfg")?.Title ?? "BOXREND",
+			Title = Assets.Load<Resource.Config.GameInfo>("gameinfo.bcfg")?.Title ?? "BOXREND",
 			VSync = false,
 			Samples = 8,
 		});
@@ -43,7 +41,7 @@ public class Engine {
 		Audio.Init();
 		Input = new();
 		Input.Init(Window);
-		Scene.Active = Scene = new(this);
+		Scene.Manager.Active = new(this);
 
 		Window.Update += Update;
 		Window.FramebufferResize += (size) => Graphics.Instance?.Viewport(size);
@@ -57,7 +55,7 @@ public class Engine {
 		Assets.Update();
 		Time.Update();
 		Input.Update();
-		Scene.UpdateActive();
+		Scene.Manager.UpdateActive();
 		Audio.Update();
 	}
 
