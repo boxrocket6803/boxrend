@@ -17,16 +17,22 @@ public class Engine {
 		e.Destroy();
 	}
 
+	private static string GetDirectory() {
+		var dir = Path.GetDirectoryName(Environment.ProcessPath).Split(Path.DirectorySeparatorChar);
+		if (dir.Length > 3 && dir[^1] == "bin" && dir[^3] == "source") //debugging
+			dir = dir[0..^3];
+		return Path.Combine(dir);
+	}
+
 	public void Init() {
-		Directory = Path.GetDirectoryName(Environment.ProcessPath);
-		var test = Directory.EndsWith("source\\engine\\bin") || Directory.EndsWith("source\\game\\bin");
-		if (test) Directory = Directory.Replace("\\source\\engine\\bin", null).Replace("\\source\\game\\bin", null);
+		Log.Info("init boxrend");
+		Directory = GetDirectory();
 		Time.Update();
 
 		Assets.Init(this);
 		Window = Silk.NET.Windowing.Window.Create(WindowOptions.Default with {
 			Size = new(300, 1),
-			Title = Config.Load<GameInfo>("gameinfo.bcfg")?.Title ?? "BOXREND",
+			Title = Resource.Load<GameInfo>("gameinfo.bcfg")?.Title ?? "BOXREND",
 			VSync = false,
 			Samples = 8,
 		});
@@ -43,15 +49,8 @@ public class Engine {
 		Window.FramebufferResize += (size) => Graphics.Instance?.Viewport(size);
 		Window.Render += (d) => Graphics.Render();
 		Window.Size = new(640, 480);
-		if (!test)
-			Window.WindowState = WindowState.Maximized;
 		Time.Update();
 		Log.Info($"engine init in {Math.Round(Time.RealNow * 1000, 2)}ms");
-	}
-
-	public void Run() {
-		Window.Run();
-		Destroy();
 	}
 
 	private void Update(double delta) {
@@ -62,5 +61,6 @@ public class Engine {
 		Audio.Update();
 	}
 
+	public void Run() => Window.Run();
 	private void Destroy() => Window.Dispose();
 }
