@@ -9,6 +9,10 @@ if not exist %2%3\soft_oal.dll (
 if not exist %1..\..\core.zip (
 	if not exist %1..\..\core mkdir %1..\..\core
 	if not exist %1..\..\core\shaders mkdir %1..\..\core\shaders
+	if not exist %1..\..\core\shaders\ds_opaque.glsl (
+		copy /y %1fallback\ds_opaque.glsl %1..\..\core\shaders\ > nul
+		echo core/shaders/ds_opaque.glsl
+	)
 	if not exist %1..\..\core\shaders\fs_fallback.glsl (
 		copy /y %1fallback\fs_fallback.glsl %1..\..\core\shaders\ > nul
 		echo core/shaders/fs_fallback.glsl
