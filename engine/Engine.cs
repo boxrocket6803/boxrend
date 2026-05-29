@@ -45,7 +45,7 @@ public class Engine {
 
 		Window.Update += Update;
 		Window.FramebufferResize += (size) => Graphics.Instance?.Viewport(size);
-		Window.Render += (d) => Graphics.Render();
+		Window.Render += (_) => Graphics.Render();
 		Window.Size = new(640, 480);
 		Time.Update();
 		Log.Info($"engine init in {Math.Round(Time.RealNow * 1000, 2)}ms");
