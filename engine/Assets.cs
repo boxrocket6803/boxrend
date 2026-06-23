@@ -29,7 +29,7 @@ public class Assets(Engine engine, string folder) {
 				return true;
 			}
 		}
-		Material.Flush();
+		Attributes.Flush();
 		HotloadList.Clear();
 		return false;
 	}
@@ -109,7 +109,7 @@ public class Assets(Engine engine, string folder) {
 		engine.Window.Title = Load<Resource.Config.GameInfo>("gameinfo.bcfg").Title;
 		foreach (var r in Resources)
 			r.Value.Load(r.Key);
-		Material.Flush();
+		Attributes.Flush();
 	}
 
 	public static T Load<T>(string path) where T : Resource.Base, new() => Resource.Base.Load<T>(path);

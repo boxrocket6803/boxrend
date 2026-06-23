@@ -32,7 +32,7 @@ public abstract class Shader : Base {
 		return true;
 	}
 
-	private static void Precompile(string path, ref string glsl) {
+	private static void Precompile(string path, ref string glsl) { //TODO combos
 		foreach (var line in glsl.Split('\n')) {
 			if (line.Trim().StartsWith("#include")) {
 				var file = line.Trim()["#include".Length..].Trim().Trim('"');

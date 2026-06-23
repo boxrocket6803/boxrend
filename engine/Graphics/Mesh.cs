@@ -1,27 +1,24 @@
 ﻿using Silk.NET.OpenGL;
 
 public class Mesh { //should this even be seperate from model?
-	public Guid Id = Guid.NewGuid();
+	public readonly Guid Id = Guid.NewGuid();
 	public uint Handle;
 	public uint Count;
 
-	public bool IsVisible(Transform transform) {
-		return true; //TODO culling
+	public void Bind() {
+		Graphics.Instance.BindVertexArray(Handle);
+		Graphics.BoundIndexCount = Count;
+	}
+	public unsafe void Draw(Transform transform) {
+		Graphics.Instance.BindVertexArray(Handle);
+		Graphics.Instance.DrawElements(PrimitiveType.Triangles, Count, DrawElementsType.UnsignedInt, (void*)0);
 	}
 	public void DrawInstanced(List<Transform> transforms) {
-		if (Graphics.Stage == Graphics.RenderStage.Submit)
-			Log.Exception("Mesh.DrawInstanced must not be called in submit stage");
 		foreach (var t in transforms)
 			Draw(t);
 		//TODO bind data, actually instance
 		//Graphics.Instance.BindVertexArray(Handle);
 		//Graphics.Instance.DrawElementsInstanced(PrimitiveType.Triangles, Count, DrawElementsType.UnsignedInt, (void*)0, (uint)transforms.Count);
-	}
-	public unsafe void Draw(Transform transform) {
-		if (Graphics.Stage == Graphics.RenderStage.Submit)
-			Log.Exception("Mesh.Draw must not be called in submit stage");
-		Graphics.Instance.BindVertexArray(Handle);
-		Graphics.Instance.DrawElements(PrimitiveType.Triangles, Count, DrawElementsType.UnsignedInt, (void*)0);
 	}
 
 	public unsafe void Load(float[] verticies, uint[] indicies) {

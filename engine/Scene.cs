@@ -19,12 +19,4 @@ public class Manager(Engine game) {
 		foreach (var sceneobject in Active.Objects)
 			sceneobject.OnUpdate();
 	}
-	public static void RenderActive() {
-		Context = Active;
-		if (Active.MainCamera == null)
-			return;
-		Active.MainCamera.Scene = Active;
-		foreach (var sceneobject in Active.Objects)
-			sceneobject.Render();
-	}
 }
