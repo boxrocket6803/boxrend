@@ -20,7 +20,7 @@ public class Graphics(Engine game) {
 		Log.Info($"graphics init in {Math.Round(timer.Elapsed.TotalSeconds * 1000, 2)}ms");
 	}
 
-	private readonly Dictionary<int, Draw.MeshBatch> _batch = [];
+	private readonly Dictionary<int, Draw.Batch> _batch = [];
 	public void Render() {
 		if (Game.Window.FramebufferSize.X == 0 || Game.Window.FramebufferSize.Y == 0)
 			return;
