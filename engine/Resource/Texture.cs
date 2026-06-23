@@ -4,13 +4,13 @@ using System.Diagnostics;
 using System.IO;
 using Silk.NET.OpenGL;
 
-public class Texture : Base {
+public class Texture : Base<Texture> {
 	public uint Width;
 	public uint Height;
 	public uint Depth;
 	public uint Handle;
 
-	public override unsafe bool Load(string path) { //TODO probably not a good idea to always assume 3d textures, but also we can determine that based on if depth is 1
+	public override unsafe bool Reload(string path) { //TODO probably not a good idea to always assume 3d textures, but also we can determine that based on if depth is 1
 		var timer = Stopwatch.StartNew();
 		var f = Assets.GetStream(path);
 		if (f is null)

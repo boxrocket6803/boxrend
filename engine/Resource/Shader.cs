@@ -3,14 +3,16 @@
 using Silk.NET.OpenGL;
 using System.Diagnostics;
 
-public abstract class Shader : Base {
-	public class Vertex : Shader {public override ShaderType Type => ShaderType.VertexShader;}
-	public class Fragment : Shader {public override ShaderType Type => ShaderType.FragmentShader;}
+public abstract class Shader {
+	public class Vertex : Shader<Vertex> {public override ShaderType Type => ShaderType.VertexShader;}
+	public class Fragment : Shader<Fragment> {public override ShaderType Type => ShaderType.FragmentShader;}
+}
 
+public abstract class Shader<T> : Base<T> where T : Base, new() {
 	public virtual ShaderType Type {get;}
 	public uint Handle;
 
-	public override bool Load(string path) {
+	public override bool Reload(string path) {
 		if (string.IsNullOrEmpty(path))
 			return false;
 		var timer = Stopwatch.StartNew();

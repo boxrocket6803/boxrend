@@ -4,15 +4,8 @@ using System.Collections;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
-public class Base : Resource.Base {
-	public static readonly HashSet<Type> GenericDataTypes = [ //TODO seems like thered be a better way to do this
-		typeof(bool), typeof(char), typeof(sbyte), typeof(byte),
-		typeof(short), typeof(ushort), typeof(int), typeof(uint),
-		typeof(long), typeof(ulong), typeof(float), typeof(double),
-		typeof(decimal), typeof(DateTime), typeof(Enum)
-	];
-
-	public override bool Load(string path) {
+public class Base<T> : Resource.Base<T> where T : Resource.Base, new() {
+	public override bool Reload(string path) {
 		var timer = Stopwatch.StartNew();
 		object Value(Type type, string value) {
 			if (value.Last() == ',')
@@ -22,10 +15,10 @@ public class Base : Resource.Base {
 			if (type == typeof(Texture)) {
 				value = Regex.Replace(value, "^\"|\"$", "");
 				var full = string.Join('/', path.Split('/').SkipLast(1));
-				return Load<Texture>(value) ?? Load<Texture>($"{full}/{value}");
+				return Texture.Load(value) ?? Texture.Load($"{full}/{value}");
 			} if (type == typeof(string))
 				return Regex.Replace(value, "^\"|\"$", "");
-			if (GenericDataTypes.Contains(type))
+			if (Base.GenericDataTypes.Contains(type))
 				return Convert.ChangeType(value, type);
 			var instance = type.GetConstructor([]).Invoke([]);
 			value = value[1..^1].Trim();
@@ -88,5 +81,52 @@ public class Base : Resource.Base {
 		Read(f, this);
 		Log.Info($"{path} load in {Math.Round(timer.Elapsed.TotalSeconds * 1000, 2)}ms");
 		return true;
+	}
+}
+
+public class Base {
+	public static readonly HashSet<Type> GenericDataTypes = [ //TODO seems like thered be a better way to do this
+		typeof(bool), typeof(char), typeof(sbyte), typeof(byte),
+		typeof(short), typeof(ushort), typeof(int), typeof(uint),
+		typeof(long), typeof(ulong), typeof(float), typeof(double),
+		typeof(decimal), typeof(DateTime), typeof(Enum)
+	];
+
+	public static void Serialilze(object message) {
+		var str = $"{message.GetType()}:";
+		static string Value(object value, Type type, string tab) {
+			if (type == typeof(string))
+				return $"\"{value}\"";
+			if (type.GetInterface(nameof(IEnumerable)) is not null) {
+				if (value is not IEnumerable enumerable)
+					return "null";
+				var any = false;
+				var str = "[";
+				foreach (var item in enumerable) {
+					any = true;
+					str += $"\n{tab}\t{Value(item, item.GetType(), tab+'\t')},";
+				}
+				if (any)
+					str = $"{str[..^1]}\n{tab}";
+				return $"{str}]";
+			}
+			if (GenericDataTypes.Contains(type))
+				return value.ToString();
+			return $"{{{Pair(value, tab+'\t')}\n{tab}}}";
+		}
+		static string Pair(object message, string tab) {
+			var str = "";
+			var array = message.GetType().GetProperties();
+			for (int i = 0; i < array.Length; i++) {
+				var property = array[i];
+				str += $"\n{tab}{property.Name} = ";
+				str += Value(property.GetValue(message), property.PropertyType, tab);
+				if (i + 1 < array.Length)
+					str += ',';
+			}
+			return str;
+		}
+		str += Pair(message, "\t\t");
+		Trace.WriteLine(str);
 	}
 }

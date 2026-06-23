@@ -2,10 +2,9 @@
 
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 
-public class Model : Base { //TODO might need to redo this BULLSHIT
-	//TODO skeleton, seperate object binds seperately
+public class Model : Base<Model> {
+	//TODO skeleton state, seperate object binds seperately
 	[Flags] public enum Flags {
 		Skeleton	= 1 << 0,
 		Color		= 1 << 1,
@@ -41,14 +40,14 @@ public class Model : Base { //TODO might need to redo this BULLSHIT
 	public Bone[] Skeleton {get; set;} = [];
 	public Mesh[] Meshes {get; set;} = [];
 
-	public override bool Load(string path) { //TODO calculate bounds somewhere in here
+	public override bool Reload(string path) { //TODO calculate bounds somewhere in here
 		var timer = Stopwatch.StartNew();
 		var r = Assets.GetStream(path);
 		if (r is null) {
 			if (path == "models/error.bmdl")
 				return false; //shit
 			Log.Error($"using fallback for missing {path}");
-			return Load("models/error.bmdl");
+			return Reload("models/error.bmdl");
 		}
 		var f = new BinaryReader(r);
 		f.ReadBytes(4); //bmdl
@@ -60,7 +59,7 @@ public class Model : Base { //TODO might need to redo this BULLSHIT
 		for (var i = 0; i < Meshes.Length; i++) {
 			Mesh mesh = new();
 			mesh.Name = f.ReadString();
-			mesh.Material = Load<Material>(f.ReadString()) ?? Material.From("shaders/vs_model.glsl", "shaders/fs_fallback.glsl", "shaders/ds_opaque.glsl");
+			mesh.Material = Material.Load(f.ReadString()) ?? Material.From("shaders/vs_model.glsl", "shaders/fs_fallback.glsl", "shaders/ds_opaque.glsl");
 			mesh.Indices = new uint[f.ReadInt32()];
 			for (var j = 0; j < mesh.Indices.Length; j++) {
 				if ((flags & (byte)Flags.BigIndicies) != 0)

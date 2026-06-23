@@ -23,7 +23,7 @@ public class Assets(Engine engine, string folder) {
 		foreach (var item in HotloadList) {
 			var path = item.Replace('\\', '/');
 			if (Resources.TryGetValue(path, out var r))
-				r.Load(path);
+				r.Reload(path);
 			if (path == "gameinfo.bcfg" && Folder == "core") {
 				Log.Info("restarting asset system");
 				return true;
@@ -72,7 +72,7 @@ public class Assets(Engine engine, string folder) {
 		Assets core = new(engine, "core");
 		core.Reload();
 		SearchPaths.Add(core);
-		var gameinfo = Load<Resource.Config.GameInfo>("gameinfo.bcfg");
+		var gameinfo = Resource.Config.GameInfo.Load("gameinfo.bcfg");
 		if (gameinfo is null || gameinfo.Resources.SearchPaths is null) {
 			Log.Error("core/gameinfo.bcfg missing or Resources.SearchPaths invalid!");
 			Log.Info($"mounting\n + 'core'");
@@ -106,13 +106,11 @@ public class Assets(Engine engine, string folder) {
 			return;
 		var engine = SearchPaths.First().Engine;
 		Init(engine);
-		engine.Window.Title = Load<Resource.Config.GameInfo>("gameinfo.bcfg").Title;
+		engine.Window.Title = Resource.Config.GameInfo.Load("gameinfo.bcfg").Title;
 		foreach (var r in Resources)
-			r.Value.Load(r.Key);
+			r.Value.Reload(r.Key);
 		Attributes.Flush();
 	}
-
-	public static T Load<T>(string path) where T : Resource.Base, new() => Resource.Base.Load<T>(path);
 
 	public static string ReadText(string path) { //TODO check if these are used
 		foreach (var dir in SearchPaths) {

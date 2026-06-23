@@ -8,45 +8,6 @@ public static class Log {
 		Trace.WriteLine(str);
 	}
 
-	public static void Unfold(object message) { //this should probably be moved into Config as a serializer
-		var str = $"{message.GetType()}:";
-		static string Value(object value, Type type, string tab) {
-			if (type == typeof(string))
-				return $"\"{value}\"";
-			if (type.GetInterface(nameof(IEnumerable)) is not null) {
-				if (value is not IEnumerable enumerable)
-					return "null";
-				var any = false;
-				var str = "[";
-				foreach (var item in enumerable) {
-					any = true;
-					str += $"\n{tab}\t{Value(item, item.GetType(), tab+'\t')},";
-				}
-				if (any)
-					str = $"{str[..^1]}\n{tab}";
-				return $"{str}]";
-			}
-			if (Resource.Config.Base.GenericDataTypes.Contains(type))
-				return value.ToString();
-			return $"{{{Pair(value, tab+'\t')}\n{tab}}}";
-		}
-		static string Pair(object message, string tab) {
-			var str = "";
-			var array = message.GetType().GetProperties();
-			for (int i = 0; i < array.Length; i++) {
-				var property = array[i];
-				str += $"\n{tab}{property.Name} = ";
-				str += Value(property.GetValue(message), property.PropertyType, tab);
-				if (i + 1 < array.Length)
-					str += ',';
-			}
-			return str;
-		}
-		str += Pair(message, "\t\t");
-		str = String(':', str);
-		Trace.WriteLine(str);
-	}
-
 	public static void Error(object message) {
 		var str = String('!', message);
 		Trace.WriteLine(str);

@@ -30,7 +30,7 @@ public class Engine {
 		Assets.Init(this);
 		Window = Silk.NET.Windowing.Window.Create(WindowOptions.Default with {
 			Size = new(300, 1),
-			Title = Assets.Load<Resource.Config.GameInfo>("gameinfo.bcfg")?.Title ?? "BOXREND",
+			Title = Resource.Config.GameInfo.Load("gameinfo.bcfg")?.Title ?? "BOXREND",
 			VSync = false,
 			Samples = 8,
 		});

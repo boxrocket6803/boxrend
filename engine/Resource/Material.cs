@@ -2,7 +2,7 @@
 
 using Silk.NET.OpenGL;
 
-public class Material : Config.Base {
+public class Material : Config.Base<Material> {
 	private struct Program {
 		public Attributes Attributes {get; set;}
 		public uint Handle {get; set;}
@@ -40,13 +40,13 @@ public class Material : Config.Base {
 	}
 
 	public static Material From(string v, string f, string d) => new() {
-		Vertex = Load<Shader.Vertex>(v),
-		Fragment = Load<Shader.Fragment>(f),
-		Depth = Load<Shader.Fragment>(d)
+		Vertex = Shader.Vertex.Load(v),
+		Fragment = Shader.Fragment.Load(f),
+		Depth = Shader.Fragment.Load(d)
 	};
 
-	public override bool Load(string path) {
-		if (!base.Load(path))
+	public override bool Reload(string path) {
+		if (!base.Reload(path))
 			return false;
 		//TODO load textures from bmat
 		return true;

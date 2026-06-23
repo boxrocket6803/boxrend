@@ -27,6 +27,7 @@
 		}
 
 		public Attributes Attributes {get;} = new();
+		public void Model(Resource.Model m) => Model(m, Transform.Indentity);
 		public void Model(Resource.Model m, Transform t) {
 			foreach (var mesh in m.Meshes)
 				Mesh(mesh.GpuMesh, mesh.Material, t);
