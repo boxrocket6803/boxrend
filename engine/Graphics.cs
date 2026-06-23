@@ -20,7 +20,7 @@ public class Graphics(Engine game) {
 		Log.Info($"graphics init in {Math.Round(timer.Elapsed.TotalSeconds * 1000, 2)}ms");
 	}
 
-	private readonly Dictionary<int, Draw.SubmitAccessor.MeshBatch> _batch = [];
+	private readonly Dictionary<int, Draw.MeshBatch> _batch = [];
 	public void Render() {
 		if (Game.Window.FramebufferSize.X == 0 || Game.Window.FramebufferSize.Y == 0)
 			return;
@@ -31,7 +31,7 @@ public class Graphics(Engine game) {
 		Scene.Manager.Active.MainCamera.Update();
 		_batch.Clear();
 		foreach (var o in Scene.Manager.Active.Objects)
-			o.Draw.Submit.Submit(_batch);
+			o.Draw.Submit(_batch);
 		Depth();
 		Color();
 		Post();
@@ -44,7 +44,7 @@ public class Graphics(Engine game) {
 			b.Mesh.DrawInstanced(b.Instances);
 		}
 		foreach (var o in Scene.Manager.Active.Objects)
-			o.Draw.Queue.Depth.Draw();
+			o.Draw.Commands.Depth.Draw();
 	}
 	private void Color() {
 		foreach (var b in _batch.Values) {
@@ -52,10 +52,10 @@ public class Graphics(Engine game) {
 			b.Mesh.DrawInstanced(b.Instances);
 		}
 		foreach (var o in Scene.Manager.Active.Objects)
-			o.Draw.Queue.Color.Draw();
+			o.Draw.Commands.Color.Draw();
 	}
 	private void Post() {
 		foreach (var o in Scene.Manager.Active.Objects)
-			o.Draw.Queue.Post.Draw();
+			o.Draw.Commands.Post.Draw();
 	}
 }
