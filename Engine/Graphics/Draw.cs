@@ -1,4 +1,6 @@
-﻿public partial class Draw {
+﻿namespace Graphics;
+
+public partial class Draw {
 	//TODO calculate bounds from calls
 	public Transform Transform {get; set;} = Transform.Indentity;
 	public Attributes Attributes {get;} = new();

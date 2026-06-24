@@ -1,4 +1,6 @@
-﻿public partial class Attributes { //TODO custom hash
+﻿namespace Graphics;
+
+public partial class Attributes { //TODO custom hash
 	private readonly Dictionary<string,object> Current = [];
 
 	public void Set(string property, float value) => Current[property] = value;

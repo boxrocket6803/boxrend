@@ -2,6 +2,7 @@
 
 public abstract class Base {
 	public Manager Scene {get; set;}
-	public Attributes Attributes {get;} = new();
+	public Transform WorldTransform {get; set;} = Transform.Indentity;
+	public Graphics.Attributes Attributes {get;} = new();
 	public virtual void Update() { }
 }

@@ -1,8 +1,10 @@
-﻿using Silk.NET.OpenGL;
+﻿namespace Graphics;
+
+using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 using System.Diagnostics;
 
-public class Graphics(Engine game) {
+public class Manager(Engine game) {
 	public readonly Engine Game = game;
 	public static GL Instance {get; private set;}
 	public static float AspectRatio {get; private set;}

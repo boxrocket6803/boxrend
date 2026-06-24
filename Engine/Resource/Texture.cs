@@ -20,7 +20,7 @@ public class Texture : Base<Texture> {
 			return false;
 		r.ReadInt32(); //hash
 		if (Handle == 0)
-			Handle = Graphics.Instance.GenTexture();
+			Handle = Graphics.Manager.Instance.GenTexture();
 		Width = r.ReadUInt16();
 		Height= r.ReadUInt16();
 		Depth = r.ReadUInt16();
@@ -36,16 +36,16 @@ public class Texture : Base<Texture> {
 			}
 		}
 		r.Close();
-		Graphics.Instance.ActiveTexture(TextureUnit.Texture0);
-		Graphics.Instance.BindTexture(TextureTarget.Texture3D, Handle);
+		Graphics.Manager.Instance.ActiveTexture(TextureUnit.Texture0);
+		Graphics.Manager.Instance.BindTexture(TextureTarget.Texture3D, Handle);
 		fixed (byte* ptr = pixels)
-			Graphics.Instance.TexImage3D(TextureTarget.Texture3D, 0, InternalFormat.R8, Width, Height, Depth, 0, PixelFormat.Red, PixelType.UnsignedByte, ptr);
-		Graphics.Instance.TextureParameter(Handle, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge); //TODO do we really have to set all of these
-		Graphics.Instance.TextureParameter(Handle, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-		Graphics.Instance.TextureParameter(Handle, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToEdge);
-		Graphics.Instance.TextureParameter(Handle, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-		Graphics.Instance.TextureParameter(Handle, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-		Graphics.Instance.BindTexture(TextureTarget.Texture3D, 0);
+			Graphics.Manager.Instance.TexImage3D(TextureTarget.Texture3D, 0, InternalFormat.R8, Width, Height, Depth, 0, PixelFormat.Red, PixelType.UnsignedByte, ptr);
+		Graphics.Manager.Instance.TextureParameter(Handle, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge); //TODO do we really have to set all of these
+		Graphics.Manager.Instance.TextureParameter(Handle, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+		Graphics.Manager.Instance.TextureParameter(Handle, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToEdge);
+		Graphics.Manager.Instance.TextureParameter(Handle, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+		Graphics.Manager.Instance.TextureParameter(Handle, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+		Graphics.Manager.Instance.BindTexture(TextureTarget.Texture3D, 0);
 		Log.Info($"{path} load in {Math.Round(timer.Elapsed.TotalSeconds * 1000, 2)}ms");
 		return true;
 	}

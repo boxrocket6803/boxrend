@@ -1,4 +1,6 @@
-﻿public partial class Draw {
+﻿namespace Graphics;
+
+public partial class Draw {
 	public struct Batch() {
 		public Mesh Mesh {get; set;}
 		public Attributes Attributes {get; set;}

@@ -2,7 +2,8 @@
 
 public abstract class Object {
 	public Manager Scene {get; private set;}
-	public Draw Draw {get;} = new();
+	public Transform WorldTransform {get; set;} = Transform.Indentity; //TODO this is shared with camera, put it in a base class or interface or something
+	public Graphics.Draw Draw {get;} = new();
 
 	public Object() : this(Manager.Context) { }
 	public Object(Manager scene) {

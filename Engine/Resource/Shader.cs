@@ -17,18 +17,18 @@ public abstract class Shader<T> : Base<T> where T : Base, new() {
 			return false;
 		var timer = Stopwatch.StartNew();
 		if (Handle == 0)
-			Handle = Graphics.Instance.CreateShader(Type);
+			Handle = Graphics.Manager.Instance.CreateShader(Type);
 		var glsl = Assets.ReadText(path);
 		if (glsl is null) {
 			Log.Error($"couldn't read file {path}");
 			return false;
 		}
 		Precompile(path, ref glsl);
-		Graphics.Instance.ShaderSource(Handle, glsl);
-		Graphics.Instance.CompileShader(Handle);
-		Graphics.Instance.GetShader(Handle, GLEnum.CompileStatus, out var status);
+		Graphics.Manager.Instance.ShaderSource(Handle, glsl);
+		Graphics.Manager.Instance.CompileShader(Handle);
+		Graphics.Manager.Instance.GetShader(Handle, GLEnum.CompileStatus, out var status);
 		if (status != (int)GLEnum.True)
-			Log.Exception($"{path} failed to compile: \n{Graphics.Instance.GetShaderInfoLog(Handle)}");
+			Log.Exception($"{path} failed to compile: \n{Graphics.Manager.Instance.GetShaderInfoLog(Handle)}");
 		else
 			Log.Info($"{path} compile in {Math.Round(timer.Elapsed.TotalSeconds * 1000, 2)}ms");
 		return true;

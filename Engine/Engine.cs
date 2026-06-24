@@ -4,7 +4,7 @@ using System.IO;
 public class Engine {
 	public IWindow Window {get; set;}
 	public string Directory {get; set;}
-	public Graphics Graphics {get; set;}
+	public Graphics.Manager Graphics {get; set;}
 	public Audio Audio {get; set;}
 	public Input Input {get; set;}
 
@@ -36,7 +36,7 @@ public class Engine {
 		});
 		Window.Initialize();
 		Graphics = new(this);
-		Graphics.Init(Window);
+		global::Graphics.Manager.Init(Window);
 		Audio = new(this);
 		Audio.Init();
 		Input = new();
@@ -44,7 +44,7 @@ public class Engine {
 		Scene.Manager.Active = new(this);
 
 		Window.Update += Update;
-		Window.FramebufferResize += (size) => Graphics.Instance?.Viewport(size);
+		Window.FramebufferResize += (size) => global::Graphics.Manager.Instance?.Viewport(size);
 		Window.Render += (_) => Graphics.Render();
 		Window.Size = new(640, 480);
 		Time.Update();

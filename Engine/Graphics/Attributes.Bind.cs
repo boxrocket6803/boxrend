@@ -1,9 +1,11 @@
-﻿public partial class Attributes {
+﻿namespace Graphics;
+
+public partial class Attributes {
 	private static uint Active {get; set;}
 	
 	public void Bind(uint handle) {
 		if (Active != handle)
-			Graphics.Instance.UseProgram(handle);
+			Manager.Instance.UseProgram(handle);
 		Active = handle;
 		foreach (var attribute in Current)
 			SetUniform(handle, attribute.Key, attribute.Value);
@@ -17,22 +19,22 @@
 		if (state.GetValueOrDefault(property) == hc)
 			return;
 		state[property] = hc;
-		var location = Graphics.Instance.GetUniformLocation(handle, property);
+		var location = Manager.Instance.GetUniformLocation(handle, property);
 		if (value is float flval) {
-			Graphics.Instance.Uniform1(location, flval);
+			Manager.Instance.Uniform1(location, flval);
 			return;
 		}
 		if (value is Vector2 v2val) {
-			Graphics.Instance.Uniform2(location, v2val);
+			Manager.Instance.Uniform2(location, v2val);
 			return;
 		}
 		if (value is Resource.Texture tval) {
-			Graphics.Instance.BindTextureUnit((uint)location, tval.Handle);
-			Graphics.Instance.Uniform1(location, location);
+			Manager.Instance.BindTextureUnit((uint)location, tval.Handle);
+			Manager.Instance.Uniform1(location, location);
 			return;
 		}
 		if (value is Matrix4x4 m3val) {
-			Graphics.Instance.UniformMatrix4(location, 1, false, (float*)&m3val);
+			Manager.Instance.UniformMatrix4(location, 1, false, (float*)&m3val);
 			return;
 		}
 	}

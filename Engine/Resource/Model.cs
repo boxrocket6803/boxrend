@@ -71,7 +71,6 @@ public class Model : Base<Model> {
 			for (var j = 0; j < mesh.Vertices.Length; j++) {
 				Mesh.Vertex vertex = new();
 				vertex.Position = new((float)f.ReadHalf(), (float)f.ReadHalf(), (float)f.ReadHalf());
-				vertex.Position *= 100f;
 				vertex.Normal = new((float)f.ReadHalf(), (float)f.ReadHalf(), (float)f.ReadHalf());
 				var l = vertex.Normal.Length();
 				if (l > 0) vertex.Normal /= l;

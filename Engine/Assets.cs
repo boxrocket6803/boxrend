@@ -29,7 +29,7 @@ public class Assets(Engine engine, string folder) {
 				return true;
 			}
 		}
-		Attributes.Flush();
+		Graphics.Attributes.Flush();
 		HotloadList.Clear();
 		return false;
 	}
@@ -109,7 +109,7 @@ public class Assets(Engine engine, string folder) {
 		engine.Window.Title = Resource.Config.GameInfo.Load("gameinfo.bcfg").Title;
 		foreach (var r in Resources)
 			r.Value.Reload(r.Key);
-		Attributes.Flush();
+		Graphics.Attributes.Flush();
 	}
 
 	public static string ReadText(string path) { //TODO check if these are used

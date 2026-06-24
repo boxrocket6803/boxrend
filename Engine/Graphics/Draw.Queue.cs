@@ -1,4 +1,6 @@
-﻿public partial class Draw {
+﻿namespace Graphics;
+
+public partial class Draw {
 	public class Queue {
 		public class Stage {
 			private List<Action> Queue {get; set;} = [];
