@@ -58,8 +58,8 @@ public class Input {
 
 		var sens = MathF.Max(Graphics.Screen.Size.x, Graphics.Screen.Size.y) * 0.5f;
 		if (sens < 1) sens = 1;
-		sens = 1 / sens;
-		sens *= 10; //TODO multiply in sensitivity
-		AnalogLook = new(MouseDelta.y * sens, -MouseDelta.y * sens, 0);
+		sens = 10 / sens;
+		sens *= 4; //TODO multiply in sensitivity
+		AnalogLook = new(MouseDelta.y * sens, -MouseDelta.x * sens, 0);
 	}
 }
