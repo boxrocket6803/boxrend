@@ -36,6 +36,7 @@ public class Mesh { //should this even be seperate from model?
 		fixed (uint* buf = indicies)
 			Graphics.Manager.Instance.BufferData(BufferTargetARB.ElementArrayBuffer, (nuint)(indicies.Length * sizeof(uint)), buf, BufferUsageARB.StaticDraw);
 
+		//TODO this should should be dynamic somehow
 		Graphics.Manager.Instance.EnableVertexAttribArray(0); //position
 		Graphics.Manager.Instance.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), (void*)0);
 		Graphics.Manager.Instance.EnableVertexAttribArray(1); //normal

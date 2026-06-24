@@ -26,4 +26,10 @@ public partial class Material {
 		}
 		return program;
 	}
+
+	public static void Flush() {
+		foreach (var p in Programs.Values)
+			Graphics.Manager.Instance.DeleteProgram(p.Handle);
+		Programs.Clear();
+	}
 }

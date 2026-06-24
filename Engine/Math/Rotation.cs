@@ -1,5 +1,5 @@
 ﻿public partial struct Rotation {
-	internal Quaternion _quat = Quaternion.Identity;
+	internal Quaternion _quat;
 
 #pragma warning disable IDE1006 //naming styles
 	public float x {readonly get => _quat.X; set => _quat.X = value;}
@@ -10,6 +10,7 @@
 
 	public Rotation(float x, float y, float z, float w) => _quat = new(x, y, z, w);
 	public Rotation(Vector3 v, float w) => _quat = new Quaternion(v.x, v.y, v.z, w);
+	public Rotation() : this(0, 0, 0, 1) { }
 
 	public static readonly Rotation Identity = new();
 	//TODO public static Rotation Random;

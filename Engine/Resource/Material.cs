@@ -13,7 +13,7 @@ public partial class Material : Config.Base<Material> {
 		Depth ??= Shader.Fragment.Load("shaders/ds_opaque.glsl");
 		Fragment ??= Shader.Fragment.Load("shaders/fs_fallback.glsl");
 		var p = GetProgram(depth);
-		p.Attributes.Clear();
+		p.Attributes.Clear(); //this stuff runs way more than it needs to
 		p.Attributes.Combine(Scene.Manager.Active.MainCamera.Attributes);
 		p.Attributes.Combine(Attributes);
 		p.Attributes.Combine(a);

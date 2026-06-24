@@ -12,6 +12,6 @@ public class Transform {
 	}
 	public Vector3 WorldScale {
 		get => WorldTransform.Scale;
-		set => WorldTransform = WorldTransform.WithScale( value );
+		set => WorldTransform = WorldTransform.WithScale(value);
 	}
 }

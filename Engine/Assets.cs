@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using Resource;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 
@@ -30,6 +31,7 @@ public class Assets(Engine engine, string folder) {
 			}
 		}
 		Graphics.Attributes.Flush();
+		Material.Flush();
 		HotloadList.Clear();
 		return false;
 	}
@@ -110,6 +112,7 @@ public class Assets(Engine engine, string folder) {
 		foreach (var r in Resources)
 			r.Value.Reload(r.Key);
 		Graphics.Attributes.Flush();
+		Material.Flush();
 	}
 
 	public static string ReadText(string path) { //TODO check if these are used

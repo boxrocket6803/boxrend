@@ -28,6 +28,10 @@ public partial class Attributes {
 			Manager.Instance.Uniform2(location, v2val);
 			return;
 		}
+		if (value is Vector3 v3val) {
+			Manager.Instance.Uniform3(location, v3val);
+			return;
+		}
 		if (value is Resource.Texture tval) {
 			Manager.Instance.BindTextureUnit((uint)location, tval.Handle);
 			Manager.Instance.Uniform1(location, location);
@@ -37,6 +41,7 @@ public partial class Attributes {
 			Manager.Instance.UniformMatrix4(location, 1, false, (float*)&m3val);
 			return;
 		}
+		Log.Error("tried to bind unknown type in Graphics.Attributes.Bind");
 	}
 
 	public static void Flush() {

@@ -5,6 +5,7 @@ public partial class Attributes { //TODO custom hash
 
 	public void Set(string property, float value) => Current[property] = value;
 	public void Set(string property, Vector2 value) => Current[property] = value;
+	public void Set(string property, Vector3 value) => Current[property] = value;
 	public void Set(string property, Resource.Texture value) => Current[property] = value.Handle;
 	public void Set(string property, Matrix4x4 value) => Current[property] = value;
 	
