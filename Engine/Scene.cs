@@ -17,6 +17,6 @@ public class Manager(Engine game) {
 	public static void UpdateActive() {
 		Context = Active;
 		foreach (var sceneobject in Active.Objects)
-			sceneobject.OnUpdate();
+			sceneobject.Update();
 	}
 }

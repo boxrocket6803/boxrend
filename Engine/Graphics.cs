@@ -7,7 +7,6 @@ using System.Diagnostics;
 public class Manager(Engine game) {
 	public readonly Engine Game = game;
 	public static GL Instance {get; private set;}
-	public static float AspectRatio {get; private set;}
 	public static uint BoundIndexCount {get; set;}
 
 	public static void Init(IWindow window) {
@@ -22,11 +21,11 @@ public class Manager(Engine game) {
 		Log.Info($"graphics init in {Math.Round(timer.Elapsed.TotalSeconds * 1000, 2)}ms");
 	}
 
-	private readonly Dictionary<int, Draw.Batch> _batch = [];
+	private static readonly Dictionary<int, Draw.Batch> _batch = [];
 	public void Render() {
-		if (Game.Window.FramebufferSize.X == 0 || Game.Window.FramebufferSize.Y == 0)
+		Screen.Size = Game.Window.FramebufferSize;
+		if (Screen.Size.x == 0 || Screen.Size.y == 0)
 			return;
-		AspectRatio = Game.Window.FramebufferSize.X / (float)Game.Window.FramebufferSize.Y;
 		Clear();
 		if (Scene.Manager.Active.MainCamera is null)
 			return;
@@ -39,8 +38,8 @@ public class Manager(Engine game) {
 		Post();
 	}
 
-	private void Clear() => Instance.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit); //TODO get clear color from camera
-	private void Depth() {
+	private static void Clear() => Instance.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit); //TODO get clear color from camera
+	private static void Depth() {
 		foreach (var b in _batch.Values) {
 			b.Material.Bind(b.Attributes, true);
 			b.Mesh.DrawInstanced(b.Instances);
@@ -48,7 +47,7 @@ public class Manager(Engine game) {
 		foreach (var o in Scene.Manager.Active.Objects)
 			o.Draw.Commands.Depth.Draw();
 	}
-	private void Color() {
+	private static void Color() {
 		foreach (var b in _batch.Values) {
 			b.Material.Bind(b.Attributes);
 			b.Mesh.DrawInstanced(b.Instances);
@@ -56,7 +55,7 @@ public class Manager(Engine game) {
 		foreach (var o in Scene.Manager.Active.Objects)
 			o.Draw.Commands.Color.Draw();
 	}
-	private void Post() {
+	private static void Post() {
 		foreach (var o in Scene.Manager.Active.Objects)
 			o.Draw.Commands.Post.Draw();
 	}

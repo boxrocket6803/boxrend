@@ -11,6 +11,7 @@ public class Input {
 	public static Vector2 MousePosition {get; private set;}
 	public static Vector2 MouseDelta {get; private set;}
 	public static float MouseWheel {get; set;}
+	public static Angles AnalogLook {get; private set;}
 	public static bool Pressed(string action) => InternalPressed.Contains(action);
 	public static bool Down(string action) => InternalDown.Contains(action);
 	public static bool Released(string action) => InternalReleased.Contains(action);
@@ -50,8 +51,15 @@ public class Input {
 		}
 		foreach (var input in InternalReleased)
 			InternalDown.Remove(input);
+
 		MouseDelta = GetMouse() - MousePosition;
 		MousePosition += MouseDelta;
 		MouseWheel = Context.Mice[0].ScrollWheels[0].Y;
+
+		var sens = MathF.Max(Graphics.Screen.Size.x, Graphics.Screen.Size.y) * 0.5f;
+		if (sens < 1) sens = 1;
+		sens = 1 / sens;
+		sens *= 10; //TODO multiply in sensitivity
+		AnalogLook = new(MouseDelta.y * sens, -MouseDelta.y * sens, 0);
 	}
 }

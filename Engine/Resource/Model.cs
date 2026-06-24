@@ -72,7 +72,7 @@ public class Model : Base<Model> {
 				Mesh.Vertex vertex = new();
 				vertex.Position = new((float)f.ReadHalf(), (float)f.ReadHalf(), (float)f.ReadHalf());
 				vertex.Normal = new((float)f.ReadHalf(), (float)f.ReadHalf(), (float)f.ReadHalf());
-				var l = vertex.Normal.Length();
+				var l = vertex.Normal.Length;
 				if (l > 0) vertex.Normal /= l;
 				vertex.TexCoord0 = new((float)f.ReadHalf(), (float)f.ReadHalf());
 				if ((flags & (byte)Flags.Color) != 0)
@@ -95,14 +95,14 @@ public class Model : Base<Model> {
 			var vdesc = new float[mesh.Vertices.Length * 8];
 			var w = 0;
 			foreach (var v in mesh.Vertices) {
-				vdesc[w++] = v.Position.X;
-				vdesc[w++] = v.Position.Y;
-				vdesc[w++] = v.Position.Z;
-				vdesc[w++] = v.Normal.X;
-				vdesc[w++] = v.Normal.Y;
-				vdesc[w++] = v.Normal.Z;
-				vdesc[w++] = v.TexCoord0.X;
-				vdesc[w++] = v.TexCoord0.Y;
+				vdesc[w++] = v.Position.x;
+				vdesc[w++] = v.Position.y;
+				vdesc[w++] = v.Position.z;
+				vdesc[w++] = v.Normal.x;
+				vdesc[w++] = v.Normal.y;
+				vdesc[w++] = v.Normal.z;
+				vdesc[w++] = v.TexCoord0.x;
+				vdesc[w++] = v.TexCoord0.y;
 			}
 			mesh.GpuMesh = new();
 			mesh.GpuMesh.Load(vdesc, mesh.Indices);
