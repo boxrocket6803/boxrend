@@ -59,7 +59,7 @@ public class Model : Base<Model> {
 		for (var i = 0; i < Meshes.Length; i++) {
 			Mesh mesh = new();
 			mesh.Name = f.ReadString();
-			mesh.Material = Material.Load(f.ReadString()) ?? Material.From("shaders/vs_model.glsl", "shaders/fs_fallback.glsl", "shaders/ds_opaque.glsl");
+			mesh.Material = Material.Load(f.ReadString()) ?? new();
 			mesh.Indices = new uint[f.ReadInt32()];
 			for (var j = 0; j < mesh.Indices.Length; j++) {
 				if ((flags & (byte)Flags.BigIndicies) != 0)

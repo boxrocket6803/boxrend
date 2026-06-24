@@ -1,14 +1,6 @@
 ﻿namespace Resource;
 
-using Silk.NET.OpenGL;
-
-public class Material : Config.Base<Material> {
-	private struct Program {
-		public Graphics.Attributes Attributes {get; set;}
-		public uint Handle {get; set;}
-	}
-	private static Dictionary<int, Program> Programs {get; set;} = [];
-
+public partial class Material : Config.Base<Material> {
 	public readonly Guid Id = Guid.NewGuid();
 	public Shader.Vertex Vertex {get; set;}
 	public Shader.Fragment Fragment {get; set;}
@@ -17,24 +9,15 @@ public class Material : Config.Base<Material> {
 	public Graphics.Attributes Attributes {get;} = new();
 
 	public void Bind(Graphics.Attributes a, bool depth = false) {
-		var h = HashCode.Combine(Vertex.Handle, depth ? Depth.Handle : Fragment.Handle);
-		if (!Programs.TryGetValue(h, out var program)) {
-			program.Attributes = new();
-			program.Handle = Graphics.Manager.Instance.CreateProgram();
-			Graphics.Manager.Instance.AttachShader(program.Handle, Vertex.Handle);
-			Graphics.Manager.Instance.AttachShader(program.Handle, depth ? Depth.Handle : Fragment.Handle);
-			Graphics.Manager.Instance.LinkProgram(program.Handle);
-			Graphics.Manager.Instance.GetProgram(program.Handle, ProgramPropertyARB.LinkStatus, out var status);
-			if (status != (int)GLEnum.True) Log.Exception($"program failed to link {Graphics.Manager.Instance.GetProgramInfoLog(program.Handle)}");
-			Graphics.Manager.Instance.DetachShader(program.Handle, Vertex.Handle);
-			Graphics.Manager.Instance.DetachShader(program.Handle, depth ? Depth.Handle : Fragment.Handle);
-			Programs[h] = program;
-		}
-		Attributes.Clear();
-		Attributes.Combine(Scene.Manager.Active.MainCamera.Attributes);
-		Attributes.Combine(Attributes);
-		Attributes.Combine(a);
-		Attributes.Bind(program.Handle);
+		Vertex ??= Shader.Vertex.Load("shaders/vs_model.glsl");
+		Depth ??= Shader.Fragment.Load("shaders/ds_opaque.glsl");
+		Fragment ??= Shader.Fragment.Load("shaders/fs_fallback.glsl");
+		var p = GetProgram(depth);
+		p.Attributes.Clear();
+		p.Attributes.Combine(Scene.Manager.Active.MainCamera.Attributes);
+		p.Attributes.Combine(Attributes);
+		p.Attributes.Combine(a);
+		p.Attributes.Bind(p.Handle);
 	}
 
 	public static Material From(string v, string f, string d) => new() {
