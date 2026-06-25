@@ -1,8 +1,9 @@
 ﻿namespace Resource;
 
 public partial class Shader<T> {
+	//TODO optimize all this
 	private readonly static HashSet<string> _included = [];
-	private static string[] Precompile(string path, string glsl) { //TODO combos
+	private static string[] Precompile(string path, string glsl) {
 		_included.Clear();
 		Include(path, ref glsl);
 		return Combos(glsl);
@@ -22,7 +23,7 @@ public partial class Shader<T> {
 					Log.Error($"couldn't find file {file} for #include directive in {path}");
 				else
 					Include(file, ref rep);
-				glsl = glsl.Replace(line, $"//{file}\n{rep}\n//"); //TODO this really sucks
+				glsl = glsl.Replace(line, $"//{file}\n{rep}\n//");
 				continue;
 			}
 		}
@@ -49,11 +50,11 @@ public partial class Shader<T> {
 		var i = glsl.IndexOf('\n');
 		var perms = new string[count];
 		if (count > 0)
-			perms[0] = glsl.Insert(i, "\n#define DEPTH 0\n#define SHADOW 0");
+			perms[0] = glsl.Insert(i, "\n#define DEPTH 0\n#define SHADOW 0").Replace("void color()", "void main()");
 		if (count > 1)
-			perms[1] = glsl.Insert(i, "\n#define DEPTH 1\n#define SHADOW 0");
+			perms[1] = glsl.Insert(i, "\n#define DEPTH 1\n#define SHADOW 0").Replace("void depth()", "void main()");
 		if (count > 2)
-			perms[2] = glsl.Insert(i, "\n#define DEPTH 1\n#define SHADOW 1");
+			perms[2] = glsl.Insert(i, "\n#define DEPTH 1\n#define SHADOW 1").Replace("void depth()", "void main()");
 		return perms;
 	}
 }
