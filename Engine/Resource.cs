@@ -15,4 +15,15 @@ public abstract class Base<T> : Base where T : Base, new() {
 
 public abstract class Base {
 	public virtual bool Reload(string path) => false;
+
+	public static Base Load(Type type, string path) {
+		path = path.Replace('\\', '/');
+		if (Assets.Resources.TryGetValue(path, out var r) && r.GetType() == type)
+			return r;
+		r = type.GetConstructor([]).Invoke([]) as Base;
+		if (!r.Reload(path))
+			r = null;
+		Assets.Resources[path] = r;
+		return r;
+	}
 }

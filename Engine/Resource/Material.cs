@@ -25,6 +25,21 @@ public partial class Material : Config.Base<Material> {
 		Fragment = Shader.Fragment.Load(f),
 		Depth = Shader.Fragment.Load(d)
 	};
+	public static Material Load(string model, string path) {
+		var m = Load($"{path}.bmat");
+		if (m is not null)
+			return m;
+		model = model.Split('.')[0];
+		m = Load($"{model}/{path}.bmat");
+		if (m is not null)
+			return m;
+		model = string.Join('/', model.Split('/').SkipLast(1));
+		m = Load($"{model}/{path}.bmat");
+		if (m is not null)
+			return m;
+		Log.Error($"couldn't find material {path} for {model}");
+		return m;
+	}
 
 	public override bool Reload(string path) {
 		if (!base.Reload(path))

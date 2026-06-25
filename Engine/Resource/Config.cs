@@ -5,19 +5,19 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 
 public class Base<T> : Resource.Base<T> where T : Resource.Base, new() {
-	public override bool Reload(string path) {
+	public override bool Reload(string path) { //TODO need a better solution for this SHIT, something like roslyn maybe, except without as many allocs maybe
 		var timer = Stopwatch.StartNew();
 		object Value(Type type, string value) {
 			if (value.Last() == ',')
 				value = value[0..^1];
 			if (value == "null")
 				return null;
-			if (type == typeof(Texture)) {
-				value = Regex.Replace(value, "^\"|\"$", "");
-				var full = string.Join('/', path.Split('/').SkipLast(1));
-				return Texture.Load(value) ?? Texture.Load($"{full}/{value}");
-			} if (type == typeof(string))
+			if (type == typeof(string))
 				return Regex.Replace(value, "^\"|\"$", "");
+			if (type.IsAssignableTo(typeof(Resource.Base))) {
+				value = Regex.Replace(value, "^\"|\"$", "");
+				return Load(type, value) ?? Load(type, $"{string.Join('/', path.Split('/').SkipLast(1))}/{value}");
+			}
 			if (Base.GenericDataTypes.Contains(type))
 				return Convert.ChangeType(value, type);
 			var instance = type.GetConstructor([]).Invoke([]);

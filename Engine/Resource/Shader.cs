@@ -28,7 +28,7 @@ public abstract class Shader<T> : Base<T> where T : Base, new() {
 		Graphics.Manager.Instance.CompileShader(Handle);
 		Graphics.Manager.Instance.GetShader(Handle, GLEnum.CompileStatus, out var status);
 		if (status != (int)GLEnum.True)
-			Log.Exception($"{path} failed to compile: \n{Graphics.Manager.Instance.GetShaderInfoLog(Handle)}");
+			Log.Error($"{path} failed to compile: \n{Graphics.Manager.Instance.GetShaderInfoLog(Handle)}");
 		else
 			Log.Info($"{path} compile in {Math.Round(timer.Elapsed.TotalSeconds * 1000, 2)}ms");
 		return true;
