@@ -15,6 +15,7 @@ public class Manager(Engine game) {
 		Instance.ClearColor(System.Drawing.Color.Black);
 		Instance.Enable(EnableCap.DepthTest);
 		Instance.Enable(EnableCap.Multisample);
+		Instance.Enable(EnableCap.CullFace);
 		Instance.DepthFunc(DepthFunction.Lequal);
 
 		Mesh.Init();
@@ -41,7 +42,7 @@ public class Manager(Engine game) {
 	private static void Clear() => Instance.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit); //TODO get clear color from camera
 	private static void Depth() {
 		foreach (var b in _batch.Values) {
-			b.Material.Bind(b.Attributes, true);
+			b.Material.Bind(b.Attributes, true, false);
 			b.Mesh.DrawInstanced(b.Instances);
 		}
 		foreach (var o in Scene.Manager.Active.Objects)
@@ -49,7 +50,7 @@ public class Manager(Engine game) {
 	}
 	private static void Color() {
 		foreach (var b in _batch.Values) {
-			b.Material.Bind(b.Attributes);
+			b.Material.Bind(b.Attributes, false, false);
 			b.Mesh.DrawInstanced(b.Instances);
 		}
 		foreach (var o in Scene.Manager.Active.Objects)

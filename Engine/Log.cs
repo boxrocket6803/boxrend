@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using System.Diagnostics;
-using System.Collections;
 
 public static class Log {
 	public static void Info(object message) {
