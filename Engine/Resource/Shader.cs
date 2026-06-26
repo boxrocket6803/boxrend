@@ -39,12 +39,12 @@ public abstract partial class Shader<T> : Base<T> where T : Base, new() {
 		//COLOR
 		if (perms.Length > 0) {
 			if (!Compile(ref ColorHandle, Type, perms[0]))
-				Fail(ref ColorHandle, 0, path, null); //TODO default shader
-		} else ColorHandle = 0; //TODO default shader
+				Fail(ref ColorHandle, 0, path, null);
+		} else ColorHandle = 0;
 		//DEPTH
 		if (perms.Length > 1) {
 			if(!Compile(ref DepthHandle, Type, perms[1]))
-				Fail(ref DepthHandle, ColorHandle, path, "DEPTH");
+				Fail(ref DepthHandle, 0, path, "DEPTH");
 		} else DepthHandle = ColorHandle;
 		//SHADW
 		if (perms.Length > 2) {

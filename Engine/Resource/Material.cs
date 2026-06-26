@@ -12,9 +12,10 @@ public partial class Material : Config.Base<Material> {
 		Fragment ??= Shader.Fragment.Load("shaders/fs_fallback.glsl");
 		var p = GetProgram(depth, shadow);
 		p.Attributes.Clear(); //this stuff runs way more than it needs to
-		p.Attributes.Combine(Scene.Manager.Active.MainCamera.Attributes);
-		p.Attributes.Combine(Attributes);
-		p.Attributes.Combine(a);
+		p.Attributes.Combine(Scene.Manager.Active.Attributes); //scene
+		p.Attributes.Combine(Scene.Manager.Active.MainCamera.Attributes); //camera
+		p.Attributes.Combine(Attributes); //material
+		p.Attributes.Combine(a); //draw
 		p.Attributes.Bind(p.Handle);
 	}
 
@@ -41,7 +42,7 @@ public partial class Material : Config.Base<Material> {
 	public override bool Reload(string path) {
 		if (!base.Reload(path))
 			return false;
-		//TODO load textures from bmat
+		//TODO load params from bmat, maybe just manually load everything
 		return true;
 	}
 }

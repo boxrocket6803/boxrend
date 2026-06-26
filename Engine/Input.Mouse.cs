@@ -24,7 +24,7 @@ public partial class Input {
 			var sens = MathF.Max(Graphics.Screen.Size.x, Graphics.Screen.Size.y) * 0.5f;
 			if (sens < 1) sens = 1;
 			sens = 10 / sens;
-			sens *= 4; //TODO multiply in sensitivity
+			sens *= Bindings.MouseSensitivity;
 			Look = new(-Delta.y * sens, -Delta.x * sens, 0);
 		}
 	}

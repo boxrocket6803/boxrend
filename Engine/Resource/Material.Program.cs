@@ -12,6 +12,8 @@ public partial class Material {
 	private Program GetProgram(bool depth, bool shadow) {
 		var v = Vertex.Handle(depth, shadow);
 		var f = Fragment.Handle(depth, shadow);
+		if (v == 0 || f == 0)
+			return Programs.First().Value; //TODO default program
 		var h = HashCode.Combine(v, f);
 		if (!Programs.TryGetValue(h, out var program)) {
 			program.Attributes = new();
@@ -21,7 +23,7 @@ public partial class Material {
 			Graphics.Manager.Instance.LinkProgram(program.Handle);
 			Graphics.Manager.Instance.GetProgram(program.Handle, ProgramPropertyARB.LinkStatus, out var status);
 			if (status != (int)GLEnum.True)
-				Log.Exception($"program failed to link {Graphics.Manager.Instance.GetProgramInfoLog(program.Handle)}");
+				Log.Error($"program failed to link: {Graphics.Manager.Instance.GetProgramInfoLog(program.Handle)}");
 			Graphics.Manager.Instance.DetachShader(program.Handle, v);
 			Graphics.Manager.Instance.DetachShader(program.Handle, f);
 			Programs[h] = program;

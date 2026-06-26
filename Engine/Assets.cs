@@ -115,7 +115,7 @@ public class Assets(Engine engine, string folder) {
 		Material.Flush();
 	}
 
-	public static string ReadText(string path) { //TODO check if these are used
+	public static string ReadText(string path) {
 		foreach (var dir in SearchPaths) {
 			var str = dir.Text(path);
 			if (str is not null)

@@ -2,16 +2,19 @@
 using System.Diagnostics;
 
 public static class Log {
+	[StackTraceHidden]
 	public static void Info(object message) {
 		var str = String(':', message);
 		Trace.WriteLine(str);
 	}
 
+	[StackTraceHidden]
 	public static void Error(object message) {
 		var str = String('!', message);
 		Trace.WriteLine(str);
 	}
 
+	[StackTraceHidden]
 	public static void Exception(object message) {
 		var str = String('!', message);
 		Trace.WriteLine(str);

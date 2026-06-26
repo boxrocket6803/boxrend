@@ -3,9 +3,15 @@
 public class Manager(Engine game) {
 	public Engine Game = game;
 
-	public HashSet<Object> Objects = [];
-	public Camera.Base MainCamera;
-	public T Add<T>() where T : Object, new() {
+	public Graphics.Attributes Attributes {get;} = new();
+
+	public HashSet<Object> Objects {get;} = [];
+	public Camera.Base MainCamera {get; set;}
+
+	public HashSet<Light.Base> Lights {get;} = [];
+	public HashSet<int> ActiveLights {get;} = [];
+
+	public T Add<T>() where T : Transform, new() {
 		Context = this;
 		var t = new T();
 		Context = Active;
@@ -16,7 +22,9 @@ public class Manager(Engine game) {
 	public static Manager Context {get => field ?? Active; set;}
 	public static void UpdateActive() {
 		Context = Active;
-		foreach (var sceneobject in Active.Objects)
-			sceneobject.Update();
+		foreach (var o in Active.Objects)
+			o.Update();
+		foreach (var o in Active.Lights)
+			o.Update();
 	}
 }

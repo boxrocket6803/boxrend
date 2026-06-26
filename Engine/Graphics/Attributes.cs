@@ -1,6 +1,6 @@
 ﻿namespace Graphics;
 
-public partial class Attributes { //TODO custom hash
+public partial class Attributes {
 	private readonly Dictionary<string,object> Current = [];
 
 	public void Set(string property, float value) => Current[property] = value;
@@ -13,5 +13,14 @@ public partial class Attributes { //TODO custom hash
 		foreach (var attr in a.Current)
 			Current[attr.Key] = attr.Value;
 	}
-	public void Clear() => Current.Clear(); //TODO do we need to clear uniforms too? (or more likely set dummy values)
+	public void Clear() => Current.Clear(); //TODO do we need to clear uniforms too? (or more likely set dummy values/destroy the program)
+
+	public override int GetHashCode() {
+		var h = new HashCode();
+		foreach (var a in Current) {
+			h.Add(a.Key);
+			h.Add(a.Value);
+		}
+		return h.ToHashCode();
+	}
 }

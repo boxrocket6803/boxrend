@@ -4,6 +4,7 @@ public partial class Input {
 	public class BindingAccessor {
 		public readonly Dictionary<string, MouseButton> Mouse = [];
 		public readonly Dictionary<string, Key> Keyboard = [];
+		public float MouseSensitivity = 4;
 
 		public void Add(string action, MouseButton button) {
 			if (Mouse.ContainsKey(action))
