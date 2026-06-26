@@ -7,7 +7,7 @@ public partial class Assets(Engine engine, string folder) {
 	public readonly Engine Engine = engine;
 	public readonly string Folder = folder;
 	public static Dictionary<string, Base> Resources {get; set;} = [];
-	private static List<Assets> SearchPaths {get; set;} = [];
+	public static List<Assets> SearchPaths {get; set;} = [];
 	private bool Loose;
 	private ZipArchive Package;
 

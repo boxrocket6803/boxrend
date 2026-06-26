@@ -32,7 +32,7 @@ public abstract partial class Shader<T> : Base<T> where T : Base, new() {
 		if (string.IsNullOrEmpty(path))
 			return false;
 		var timer = Stopwatch.StartNew();
-		var perms = path.EndsWith("glsl") ? ProcessGLSL(path) : ProcessHLSL(path, Type);
+		var perms = path.EndsWith("glsl") ? ProcessGLSL(path) : ProcessSlang(path, Type);
 		perms ??= [];
 		if (ShadwHandle == DepthHandle)
 			ShadwHandle = 0;
@@ -53,12 +53,14 @@ public abstract partial class Shader<T> : Base<T> where T : Base, new() {
 			if (!Compile(ref ShadwHandle, Type, perms[2]))
 				Fail(ref ShadwHandle, DepthHandle, path, "DEPTH SHADOW");
 		} else ShadwHandle = DepthHandle;
-		Log.Info($"{path} compile in {Math.Round(timer.Elapsed.TotalSeconds * 1000, 2)}ms ({perms.Length} COMBOS)");
+		Log.Info($"{path} compile in {Math.Round(timer.Elapsed.TotalSeconds * 1000, 2)}ms ({perms.Length} COMBOS for {Type})");
 		return true;
 	}
 
 	protected virtual uint Fallback() => 0;
 	private static bool Compile(ref uint handle, ShaderType type, string glsl) {
+		if (glsl is null)
+			return false;
 		if (handle == 0)
 			handle = Graphics.Manager.Instance.CreateShader(type);
 		Graphics.Manager.Instance.ShaderSource(handle, glsl);
