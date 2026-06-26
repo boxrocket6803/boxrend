@@ -4,8 +4,14 @@ using Silk.NET.OpenGL;
 using System.Diagnostics;
 
 public abstract class Shader {
-	public class Vertex : Shader<Vertex> {public override ShaderType Type => ShaderType.VertexShader;}
-	public class Fragment : Shader<Fragment> {public override ShaderType Type => ShaderType.FragmentShader;}
+	public class Vertex : Shader<Vertex> {
+		public override ShaderType Type => ShaderType.VertexShader;
+		protected override uint Fallback() => Load("shaders/vs_fallback.glsl").Handle(false, false);
+	}
+	public class Fragment : Shader<Fragment> {
+		public override ShaderType Type => ShaderType.FragmentShader;
+		protected override uint Fallback() => Load("shaders/fs_fallback.glsl").Handle(false, false);
+	}
 }
 
 public abstract partial class Shader<T> : Base<T> where T : Base, new() {
@@ -26,25 +32,21 @@ public abstract partial class Shader<T> : Base<T> where T : Base, new() {
 		if (string.IsNullOrEmpty(path))
 			return false;
 		var timer = Stopwatch.StartNew();
-		var glsl = Assets.ReadText(path);
-		if (glsl is null) {
-			Log.Error($"couldn't read file {path}");
-			return false;
-		}
+		var perms = path.EndsWith("glsl") ? ProcessGLSL(path) : ProcessHLSL(path, Type);
+		perms ??= [];
 		if (ShadwHandle == DepthHandle)
 			ShadwHandle = 0;
 		if (DepthHandle == ColorHandle)
 			DepthHandle = 0;
-		var perms = Precompile(path, glsl);
 		//COLOR
 		if (perms.Length > 0) {
 			if (!Compile(ref ColorHandle, Type, perms[0]))
-				Fail(ref ColorHandle, 0, path, null);
-		} else ColorHandle = 0;
+				Fail(ref ColorHandle, Fallback(), path, null);
+		} else ColorHandle = Fallback();
 		//DEPTH
 		if (perms.Length > 1) {
 			if(!Compile(ref DepthHandle, Type, perms[1]))
-				Fail(ref DepthHandle, 0, path, "DEPTH");
+				Fail(ref DepthHandle, Fallback(), path, "DEPTH");
 		} else DepthHandle = ColorHandle;
 		//SHADW
 		if (perms.Length > 2) {
@@ -55,6 +57,7 @@ public abstract partial class Shader<T> : Base<T> where T : Base, new() {
 		return true;
 	}
 
+	protected virtual uint Fallback() => 0;
 	private static bool Compile(ref uint handle, ShaderType type, string glsl) {
 		if (handle == 0)
 			handle = Graphics.Manager.Instance.CreateShader(type);

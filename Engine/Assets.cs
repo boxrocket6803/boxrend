@@ -3,56 +3,14 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 
-public class Assets(Engine engine, string folder) {
+public partial class Assets(Engine engine, string folder) {
 	public readonly Engine Engine = engine;
 	public readonly string Folder = folder;
-	public static Dictionary<string, Resource.Base> Resources {get; set;} = [];
+	public static Dictionary<string, Base> Resources {get; set;} = [];
 	private static List<Assets> SearchPaths {get; set;} = [];
 	private bool Loose;
 	private ZipArchive Package;
-	private FileSystemWatcher Watcher;
-	private readonly HashSet<string> HotloadList = [];
 
-	private bool UpdateDir() {
-		if (HotloadList.Count == 0)
-			return false;
-		try {
-			foreach (var item in HotloadList) //this is messy and terrible, only way to do it though
-				File.Open(Path.Combine([Engine.Directory, Folder, item]), FileMode.Open).Close();
-		} catch {return false;}
-		Reload();
-		foreach (var item in HotloadList) {
-			var path = item.Replace('\\', '/');
-			if (Resources.TryGetValue(path, out var r))
-				r.Reload(path);
-			if (path == "gameinfo.bcfg" && Folder == "core") {
-				Log.Info("restarting asset system");
-				return true;
-			}
-		}
-		Graphics.Attributes.Flush();
-		Material.Flush();
-		HotloadList.Clear();
-		return false;
-	}
-	private void Reload() {
-		Package?.Dispose();
-		Package = null;
-		Loose = false;
-
-		var path = Path.Combine(Engine.Directory, Folder);
-		if (File.Exists(path+".zip"))
-			Package = new ZipArchive(File.Open(path+".zip", FileMode.Open, FileAccess.Read, FileShare.ReadWrite), ZipArchiveMode.Read);
-		if (Directory.Exists(path))
-			Loose = true;
-		if (Watcher == null && Path.Exists(Path.Combine(Engine.Directory, Folder))) {
-			Watcher = new(Path.Combine(Engine.Directory, Folder)) {
-				IncludeSubdirectories = true,
-				EnableRaisingEvents = true,
-			};
-			Watcher.Changed += (s,e) => HotloadList.Add(e.Name);
-		}
-	}
 	private string Text(string path) {
 		if (Loose && File.Exists(Path.Combine([Engine.Directory, Folder, path])))
 			return File.ReadAllText(Path.Combine([Engine.Directory, Folder, path]));
@@ -65,6 +23,11 @@ public class Assets(Engine engine, string folder) {
 		if (Loose && File.Exists(Path.Combine([Engine.Directory, Folder, path])))
 			return File.Open(Path.Combine([Engine.Directory, Folder, path]), FileMode.Open);
 		return Package?.GetEntry(path)?.Open() ?? null;
+	}
+	private bool Exists(string path) {
+		if (Loose && File.Exists(Path.Combine([Engine.Directory, Folder, path])))
+			return true;
+		return Package?.GetEntry(path) is not null;
 	}
 
 	public static void Init(Engine engine) {
@@ -128,6 +91,13 @@ public class Assets(Engine engine, string folder) {
 			var str = dir.Stream(path);
 			if (str is not null)
 				return str;
+		}
+		return null;
+	}
+	public static string GetFullPath(string path) { //TODO figure out how to handle zipped files
+		foreach (var dir in SearchPaths) {
+			if (dir.Exists(path))
+				return Path.Combine([dir.Engine.Directory, dir.Folder, path]);
 		}
 		return null;
 	}

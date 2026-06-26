@@ -18,7 +18,7 @@ public abstract class Base {
 
 	public static Base Load(Type type, string path) {
 		path = path.Replace('\\', '/');
-		if (Assets.Resources.TryGetValue(path, out var r) && r.GetType() == type)
+		if (Assets.Resources.TryGetValue(path, out var r) && r?.GetType() == type)
 			return r;
 		r = type.GetConstructor([]).Invoke([]) as Base;
 		if (!r.Reload(path))
