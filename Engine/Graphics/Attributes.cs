@@ -1,23 +1,14 @@
 ﻿namespace Graphics;
 
-public partial class Attributes {
-	private readonly Dictionary<string,object> Current = [];
-
-	public void Set(string property, float value) => Current[property] = value;
-	public void Set(string property, Vector2 value) => Current[property] = value;
-	public void Set(string property, Vector3 value) => Current[property] = value;
-	public void Set(string property, Resource.Texture value) => Current[property] = value.Handle;
-	public void Set(string property, Matrix4x4 value) => Current[property] = value;
-	
+public partial class Attributes : Dictionary<string,object> {
 	public void Combine(Attributes a) {
-		foreach (var attr in a.Current)
-			Current[attr.Key] = attr.Value;
+		foreach (var attr in a)
+			this[attr.Key] = attr.Value;
 	}
-	public void Clear() => Current.Clear(); //TODO do we need to clear uniforms too? (or more likely set dummy values/destroy the program)
 
 	public override int GetHashCode() {
 		var h = new HashCode();
-		foreach (var a in Current) {
+		foreach (var a in this) {
 			h.Add(a.Key);
 			h.Add(a.Value);
 		}

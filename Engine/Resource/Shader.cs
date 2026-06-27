@@ -28,7 +28,9 @@ public abstract partial class Shader<T> : Base<T> where T : Base, new() {
 		return ColorHandle;
 	}
 
+	private static bool _failed = false;
 	public override bool Reload(string path) {
+		_failed = false;
 		if (string.IsNullOrEmpty(path))
 			return false;
 		var timer = Stopwatch.StartNew();
@@ -53,7 +55,8 @@ public abstract partial class Shader<T> : Base<T> where T : Base, new() {
 			if (!Compile(ref ShadwHandle, Type, perms[2]))
 				Fail(ref ShadwHandle, DepthHandle, path, "DEPTH SHADOW");
 		} else ShadwHandle = DepthHandle;
-		Log.Info($"{path} compile in {Math.Round(timer.Elapsed.TotalSeconds * 1000, 2)}ms ({perms.Length} COMBOS for {Type})");
+		if (!_failed)
+			Log.Info($"{path} compile in {Math.Round(timer.Elapsed.TotalSeconds * 1000, 2)}ms for {GetStageString(Type).ToLower()} with {perms.Length} combos");
 		return true;
 	}
 
@@ -70,7 +73,9 @@ public abstract partial class Shader<T> : Base<T> where T : Base, new() {
 	}
 
 	private static void Fail(ref uint handle, uint replace, string path, string combos) {
-		Log.Error($"{path} failed to compile{(combos is null ? "" : " with combos "+combos)}: \n{Graphics.Manager.Instance.GetShaderInfoLog(handle)}");
+		_failed = true;
+		var log = Graphics.Manager.Instance.GetShaderInfoLog(handle);
+		Log.Error($"{path} failed to compile{(combos is null ? "" : " with combos "+combos)}{(string.IsNullOrEmpty(log) ? "!" : ":\n"+log)}");
 		Graphics.Manager.Instance.DeleteShader(handle);
 		handle = replace;
 	}

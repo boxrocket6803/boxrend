@@ -3,12 +3,12 @@
 public abstract class Base<T> : Base where T : Base, new() {
 	public static T Load(string path) {
 		path = path.Replace('\\', '/');
-		if (Assets.Resources.TryGetValue(path, out var r) && r is T resource)
-			return resource;
-		resource = new T();
+		if (Assets.Resources.TryGetValue($"{typeof(T)}:{path}", out var r))
+			return r as T;
+		var resource = new T();
 		if (!resource.Reload(path))
 			resource = null;
-		Assets.Resources[path] = resource;
+		Assets.Resources[$"{typeof(T)}:{path}"] = resource;
 		return resource;
 	}
 }

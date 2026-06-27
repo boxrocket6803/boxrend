@@ -21,8 +21,12 @@ private FileSystemWatcher Watcher;
 			Reload();
 			foreach (var item in HotloadList) {
 				var path = item.Replace('\\', '/');
-				if (Resources.TryGetValue(path, out var r))
-					r.Reload(path);
+				foreach (var r in Resources) {
+					var p = r.Key.Split(':')[1];
+					if (p != path)
+						continue;
+					r.Value.Reload(p);
+				}
 				if (path == "gameinfo.bcfg" && Folder == "core") {
 					Log.Info("restarting asset system");
 					return true;

@@ -2,26 +2,28 @@
 
 public partial class Material : Config.Base<Material> {
 	public readonly Guid Id = Guid.NewGuid();
-	public Shader.Vertex Vertex {get; set;}
-	public Shader.Fragment Fragment {get; set;}
+	public string Shader {get; set;} //TODO = fallback
+	private Shader.Vertex Vertex {get; set;}
+	private Shader.Fragment Fragment {get; set;}
 
 	public Graphics.Attributes Attributes {get;} = new();
 
 	public void Bind(Graphics.Attributes a, bool depth, bool shadow) {
-		Vertex ??= Shader.Vertex.Load("shaders/vs_static.glsl");
-		Fragment ??= Shader.Fragment.Load("shaders/fs_fallback.glsl");
+		Vertex ??= Resource.Shader.Vertex.Load(Shader);
+		Fragment ??= Resource.Shader.Fragment.Load(Shader);
 		var p = GetProgram(depth, shadow);
 		p.Attributes.Clear(); //this stuff runs way more than it needs to
+		p.Attributes["Camera"] = Scene.Manager.Active.MainCamera.Data; //camera
 		p.Attributes.Combine(Scene.Manager.Active.Attributes); //scene
-		p.Attributes.Combine(Scene.Manager.Active.MainCamera.Attributes); //camera
 		p.Attributes.Combine(Attributes); //material
 		p.Attributes.Combine(a); //draw
 		p.Attributes.Bind(p.Handle);
 	}
 
-	public static Material From(string v, string f) => new() {
-		Vertex = Shader.Vertex.Load(v),
-		Fragment = Shader.Fragment.Load(f),
+	public static Material From(string s) => new() {Shader = s};
+	public static Material From(string v, string f) => new() { //TODO remove this
+		Vertex = Resource.Shader.Vertex.Load(v),
+		Fragment = Resource.Shader.Fragment.Load(f),
 	};
 	public static Material Load(string model, string path) {
 		var m = Load($"{path}.bmat");

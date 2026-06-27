@@ -23,10 +23,10 @@ public abstract class Base : Transform {
 		Manager.Context = scene;
 	}
 	public void Update() {
-		Scene.Attributes.Set($"Lights[{Index}].Position", WorldPosition);
+		//TODO Scene.Attributes[$"Lights[{Index}].Position"] = WorldPosition;
 	}
 	public void Destroy() {
-		Scene.Attributes.Set($"Lights[{Index}].Color", Vector3.Zero);
+		//TODO Scene.Attributes[$"Lights[{Index}].Color"] = Vector3.Zero;
 		Scene.ActiveLights.Remove(Index);
 		Scene.Lights.Remove(this);
 	}

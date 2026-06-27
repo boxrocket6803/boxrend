@@ -73,7 +73,7 @@ public partial class Assets(Engine engine, string folder) {
 		Init(engine);
 		engine.Window.Title = Resource.Config.GameInfo.Load("gameinfo.bcfg").Title;
 		foreach (var r in Resources)
-			r.Value.Reload(r.Key);
+			r.Value.Reload(r.Key.Split(':')[1]);
 		Graphics.Attributes.Flush();
 		Material.Flush();
 	}
