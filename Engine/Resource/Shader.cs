@@ -3,7 +3,7 @@
 using Silk.NET.OpenGL;
 using System.Diagnostics;
 
-public abstract class Shader {
+public abstract partial class Shader {
 	public class Vertex : Shader<Vertex> {
 		public override ShaderType Type => ShaderType.VertexShader;
 		protected override uint Fallback() => Load("shaders/vs_fallback.glsl").Handle(false, false);

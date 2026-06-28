@@ -6,14 +6,8 @@ namespace Resource;
 
 public partial class Shader<T> {
 	private static string[] ProcessSlang(string path, ShaderType type) {
-		var slang = Assets.ReadText(path);
-		if (slang is null) {
-			Log.Error($"couldn't read file {path}");
-			return null;
-		}
-		//TODO depth and shadow combos
-		var glsl = SlangCompile(path, slang, type);
-		//Log.Info(glsl);
+		var meta = Shader.Metadata.Load(path);
+		var glsl = SlangCompile(path, meta.Source, type);
 		return [glsl];
 	}
 
@@ -21,14 +15,14 @@ public partial class Shader<T> {
 		if (type == ShaderType.FragmentShader) return "Fragment";
 		if (type == ShaderType.VertexShader) return "Vertex";
 		if (type == ShaderType.ComputeShader) return "Compute";
-		Log.Exception("unknown stage in Shader.SLANG.GetStageString()");
+		Log.Exception("unknown stage in Shader.GetStageString()");
 		return null;
 	}
 	private static Stage GetStage(ShaderType type) {
 		if (type == ShaderType.FragmentShader) return Stage.Fragment;
 		if (type == ShaderType.VertexShader) return Stage.Vertex;
 		if (type == ShaderType.ComputeShader) return Stage.Compute;
-		Log.Exception("unknown stage in Shader.SLANG.GetStage()");
+		Log.Exception("unknown stage in Shader.GetStage()");
 		return Stage.None;
 	}
 
@@ -36,8 +30,8 @@ public partial class Shader<T> {
 	private readonly static List<Module.Builder> _coolmemoryleak = [];
 	private static string SlangCompile(string path, string slang, ShaderType type) {
 		// Create the session
-		var s = new Session.Builder().AddTarget(Targets.Glsl.v450).AddSearchPath("E:/bkit/bkit/shaders").Create(); //TODO make dynamic
-		var m = new Module.Builder(s).AddTranslationUnit(SourceLanguage.Slang, "ROOT", out var idx);
+		var s = new Session.Builder().AddTarget(Targets.Glsl.v450).AddSearchPath("E:/bkit/bkit/shaders"); //TODO make search paths dynamic
+		var m = new Module.Builder(s.Create()).AddTranslationUnit(SourceLanguage.Slang, "ROOT", out var idx);
 		m = m.AddTranslationUnitSourceString(idx, path, slang);
 		m = m.AddEntryPoint(idx, GetStageString(type), GetStage(type));
 		_coolmemoryleak.Add(m);

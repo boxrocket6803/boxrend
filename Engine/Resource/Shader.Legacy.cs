@@ -1,7 +1,6 @@
 ﻿namespace Resource;
 
-public partial class Shader<T> {
-	//TODO optimize all this
+public partial class Shader<T> { //TODO remove this
 	private readonly static HashSet<string> _included = [];
 	private static string[] ProcessGLSL(string path) {
 		var glsl = Assets.ReadText(path);

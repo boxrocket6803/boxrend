@@ -39,6 +39,11 @@ private FileSystemWatcher Watcher;
 		return false;
 	}
 
+	public static void Reload(string path) {
+		foreach (var p in SearchPaths)
+			p.HotloadList.Add(path);
+	}
+
 	private void Reload() {
 		Package?.Dispose();
 		Package = null;
