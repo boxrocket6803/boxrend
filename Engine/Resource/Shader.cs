@@ -6,11 +6,11 @@ using System.Diagnostics;
 public abstract partial class Shader {
 	public class Vertex : Shader<Vertex> {
 		public override ShaderType Type => ShaderType.VertexShader;
-		protected override uint Fallback() => Load("shaders/fallback.slang").Handle(false, false);
+		protected override uint Fallback() => Load("shaders/fallback.slang")?.Handle(false, false) ?? 0;
 	}
 	public class Fragment : Shader<Fragment> {
 		public override ShaderType Type => ShaderType.FragmentShader;
-		protected override uint Fallback() => Load("shaders/fallback.slang").Handle(false, false);
+		protected override uint Fallback() => Load("shaders/fallback.slang")?.Handle(false, false) ?? 0;
 	}
 }
 
@@ -30,6 +30,8 @@ public abstract partial class Shader<T> : Base<T> where T : Base, new() {
 
 	private static bool _failed = false;
 	public override bool Reload(string path) {
+		if (path == "shaders/fallback.slang")
+			return false;
 		_failed = false;
 		if (string.IsNullOrEmpty(path))
 			return false;
@@ -56,7 +58,7 @@ public abstract partial class Shader<T> : Base<T> where T : Base, new() {
 				Fail(ref ShadwHandle, DepthHandle, path, "DEPTH SHADOW");
 		} else ShadwHandle = DepthHandle;
 		if (!_failed)
-			Log.Info($"{path} compile in {Math.Round(timer.Elapsed.TotalSeconds * 1000, 2)}ms for {GetStageString(Type).ToLower()} with {perms.Length} combos");
+			Log.Info($"{path} compile in {Math.Round(timer.Elapsed.TotalSeconds * 1000, 2)}ms for {Type.ToString().ToLower()} with {perms.Length} combos");
 		return true;
 	}
 
