@@ -21,13 +21,10 @@ if not exist %2%3\slang-glsl-module.dll (
 if not exist %1..\..\core.zip (
 	if not exist %1..\..\core mkdir %1..\..\core
 	if not exist %1..\..\core\shaders mkdir %1..\..\core\shaders
-	if not exist %1..\..\core\shaders\vs_fallback.glsl (
-		copy /y %1Fallback\vs_fallback.glsl %1..\..\core\shaders\ > nul
-		echo core/shaders/vs_fallback.glsl
-	)
-	if not exist %1..\..\core\shaders\fs_fallback.glsl (
-		copy /y %1Fallback\fs_fallback.glsl %1..\..\core\shaders\ > nul
-		echo core/shaders/fs_fallback.glsl
+	
+	if not exist %1..\..\core\shaders\fallback.slang (
+		copy /y %1Fallback\fallback.slang %1..\..\core\shaders\ > nul
+		echo core/shaders/fallback.slang
 	)
 	if not exist %1..\..\core\models mkdir %1..\..\core\models
 	if not exist %1..\..\core\models\error.bmdl (

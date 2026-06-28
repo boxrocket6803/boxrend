@@ -29,7 +29,6 @@ public partial class Shader<T> {
 	//Module.Builder destroys everything when it gets disposed so just keep it alive forever lol
 	private readonly static List<Module.Builder> _coolmemoryleak = [];
 	private static string SlangCompile(string path, string slang, ShaderType type) {
-		// Create the session
 		var s = new Session.Builder().AddTarget(Targets.Glsl.v450).AddSearchPath("E:/bkit/bkit/shaders"); //TODO make search paths dynamic
 		var m = new Module.Builder(s.Create()).AddTranslationUnit(SourceLanguage.Slang, "ROOT", out var idx);
 		m = m.AddTranslationUnitSourceString(idx, path, slang);

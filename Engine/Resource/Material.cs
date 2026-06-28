@@ -2,7 +2,7 @@
 
 public partial class Material : Config.Base<Material> {
 	public readonly Guid Id = Guid.NewGuid();
-	public string Shader {get; set;} //TODO = fallback
+	public string Shader {get; set;} = "shaders/fallback.slang";
 	private Shader.Vertex Vertex {get; set;}
 	private Shader.Fragment Fragment {get; set;}
 
@@ -44,7 +44,10 @@ public partial class Material : Config.Base<Material> {
 	public override bool Reload(string path) {
 		if (!base.Reload(path))
 			return false;
-		//TODO load params from bmat, maybe just manually load everything
+		Shader = Shader.Replace('\\', '/');
+		if (!Shader.StartsWith("shaders/"))
+			Shader = $"shaders/{Shader}";
+		var meta = Resource.Shader.Metadata.Load(Shader);
 		return true;
 	}
 }

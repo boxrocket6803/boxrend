@@ -6,11 +6,11 @@ using System.Diagnostics;
 public abstract partial class Shader {
 	public class Vertex : Shader<Vertex> {
 		public override ShaderType Type => ShaderType.VertexShader;
-		protected override uint Fallback() => Load("shaders/vs_fallback.glsl").Handle(false, false);
+		protected override uint Fallback() => Load("shaders/fallback.slang").Handle(false, false);
 	}
 	public class Fragment : Shader<Fragment> {
 		public override ShaderType Type => ShaderType.FragmentShader;
-		protected override uint Fallback() => Load("shaders/fs_fallback.glsl").Handle(false, false);
+		protected override uint Fallback() => Load("shaders/fallback.slang").Handle(false, false);
 	}
 }
 
@@ -34,7 +34,7 @@ public abstract partial class Shader<T> : Base<T> where T : Base, new() {
 		if (string.IsNullOrEmpty(path))
 			return false;
 		var timer = Stopwatch.StartNew();
-		var perms = path.EndsWith("glsl") ? ProcessGLSL(path) : ProcessSlang(path, Type);
+		var perms = ProcessSlang(path, Type);
 		perms ??= [];
 		if (ShadwHandle == DepthHandle)
 			ShadwHandle = 0;

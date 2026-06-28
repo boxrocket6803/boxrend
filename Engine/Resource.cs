@@ -2,6 +2,8 @@
 
 public abstract class Base<T> : Base where T : Base, new() {
 	public static T Load(string path) {
+		if (path is null)
+			return null;
 		path = path.Replace('\\', '/');
 		if (Assets.Resources.TryGetValue($"{typeof(T)}:{path}", out var r))
 			return r as T;
