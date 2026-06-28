@@ -38,9 +38,9 @@ public partial class Shader {
 			return true;
 		}
 
-		private void FindEntryPoints() {
-			HasVertex = Source.Contains("Vertex(");
-			HasFragment = Source.Contains("Fragment(");
+		private void FindEntryPoints() { //eh
+			HasVertex = Source.Contains(" Vertex(");
+			HasFragment = Source.Contains(" Fragment(");
 		}
 
 		private void GetReflectionData(string path) {

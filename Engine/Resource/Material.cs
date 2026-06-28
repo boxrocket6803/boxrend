@@ -42,8 +42,10 @@ public partial class Material : Config.Base<Material> {
 	}
 
 	public override bool Reload(string path) {
-		if (!base.Reload(path))
+		var f = Assets.ReadText(path);
+		if (f is null)
 			return false;
+		Read(path, f, this);
 		Shader = Shader.Replace('\\', '/');
 		if (!Shader.StartsWith("shaders/"))
 			Shader = $"shaders/{Shader}";
