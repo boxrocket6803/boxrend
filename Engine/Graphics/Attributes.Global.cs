@@ -1,14 +1,20 @@
 ﻿namespace Graphics;
 
 using Silk.NET.OpenGL;
+using Slang.Sdk;
 
 public partial class Attributes {
 	private byte[] Globals;
+	private uint GlobalBuffer;
 
-	private void GenGlobals() {
+	//TODO this only needs to be run once per frame, with the caveat that different shaders might use
+	//different global buffer layouts, probably hash by names in layout and keep static dict of buffers
+	//with hash key, then second hashset reset after update so it only updates the buffer once
+	private void UpdateGlobal() {
 		Globals ??= new byte[160];
 		Array.Fill<byte>(Globals, 0);
 		var w = 0;
+
 		//TODO get the layout dynamically
 		if (TryGetValue("Camera", out var d) && d is Scene.Camera.Base.CameraData camera) {
 			Write(Globals, ref w, camera.Projection);

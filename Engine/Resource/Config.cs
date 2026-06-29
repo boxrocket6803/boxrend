@@ -19,10 +19,8 @@ public class Base<T> : Resource.Base<T> where T : Resource.Base, new() {
 		if (string.IsNullOrEmpty(chunk))
 			return target;
 		var (key,value,next) = ReadKV(chunk);
-
 		var property = target.GetType().GetProperty(key);
 		property?.SetValue(target, Value(path, property.PropertyType, value));
-
 		if (next is not null)
 			Read(path, next, target);
 		return target;
@@ -31,10 +29,8 @@ public class Base<T> : Resource.Base<T> where T : Resource.Base, new() {
 		if (string.IsNullOrEmpty(chunk))
 			return target;
 		var (key,value,next) = ReadKV(chunk);
-		
 		if (schema.TryGetValue(key, out var type))
-			Log.Info(target[key] = Value(path, type, value));
-
+			target[key] = Value(path, type, value);
 		if (next is not null)
 			Read(path, next, schema, target);
 		return target;

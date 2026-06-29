@@ -20,7 +20,7 @@ public partial class Material : Config.Base<Material> {
 		p.Attributes.Combine(Scene.Manager.Active.Attributes); //scene
 		p.Attributes.Combine(Attributes); //material
 		p.Attributes.Combine(a); //draw
-		p.Attributes.Bind(p.Handle);
+		p.Attributes.Bind(p.Handle, Meta);
 	}
 
 	public static Material From(string s) => new() {Shader = s};
