@@ -22,7 +22,7 @@ private FileSystemWatcher Watcher;
 			foreach (var item in HotloadList) {
 				var path = item.Replace('\\', '/');
 				foreach (var r in Resources) {
-					var p = r.Key.Split(':')[1];
+					var p = r.Key.Split(':').Last();
 					if (p != path)
 						continue;
 					r.Value.Reload(p);
@@ -32,7 +32,7 @@ private FileSystemWatcher Watcher;
 					return true;
 				}
 			}
-		} catch {return false;} //TODO should clear from hotload list if the file doesnt exist
+		} catch {return false;}
 		Graphics.Attributes.Flush();
 		Material.Flush();
 		HotloadList.Clear();

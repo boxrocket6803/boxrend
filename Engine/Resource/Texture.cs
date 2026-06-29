@@ -20,7 +20,6 @@ public class Texture : Base<Texture> {
 	public uint Handle;
 
 	public override bool Reload(string path) {
-		Log.Info(path);
 		var timer = Stopwatch.StartNew();
 		var f = Assets.GetStream(path);
 		if (f is null)
@@ -45,19 +44,20 @@ public class Texture : Base<Texture> {
 	}
 	private unsafe void Load<T>(BinaryReader r, InternalFormat i, PixelFormat p, int c) {
 		if (Handle == 0)
-			Handle = Graphics.Manager.Instance.CreateTexture(TextureTarget.Texture2D);
+			Handle = Graphics.Manager.Instance.GenTexture();
 		Graphics.Manager.Instance.ActiveTexture(TextureUnit.Texture0);
 		Graphics.Manager.Instance.BindTexture(TextureTarget.Texture2D, Handle);
 		if (typeof(T) == typeof(byte)) {
 			var pixels = ReadData<byte>(r, c);
 			fixed (byte* ptr = pixels)
-				Graphics.Manager.Instance.TexImage2D(TextureTarget.Texture3D, 0, i, Width, Height, 0, p, PixelType.UnsignedByte, ptr);
+				Graphics.Manager.Instance.TexImage2D(TextureTarget.Texture2D, 0, i, Width, Height, 0, p, PixelType.UnsignedByte, ptr);
 		} else if (typeof(T) == typeof(uint)) {
 			var pixels = ReadData<uint>(r, c);
 			fixed (uint* ptr = pixels)
-				Graphics.Manager.Instance.TexImage2D(TextureTarget.Texture3D, 0, i, Width, Height, 0, p, PixelType.UnsignedByte, ptr);
+				Graphics.Manager.Instance.TexImage2D(TextureTarget.Texture2D, 0, i, Width, Height, 0, p, PixelType.UnsignedInt, ptr);
 		} else
 			Log.Error("unsupported type in Texture.Load");
+		Graphics.Manager.Instance.GenerateMipmap(TextureTarget.Texture2D);
 		Graphics.Manager.Instance.BindTexture(TextureTarget.Texture2D, 0);
 	}
 
@@ -69,7 +69,6 @@ public class Texture : Base<Texture> {
 		Depth = r.ReadUInt16();
 	}
 	protected T[] ReadData<T>(BinaryReader r, int channels) {
-		Log.Info($"{typeof(T)} {Type}");
 		var d = new T[Width * Height * Depth * channels];
 		var w = 0;
 		var c = new object[channels];
