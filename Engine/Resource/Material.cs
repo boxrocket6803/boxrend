@@ -1,8 +1,11 @@
-﻿namespace Resource;
+﻿using Slang.Sdk;
+
+namespace Resource;
 
 public partial class Material : Config.Base<Material> {
 	public readonly Guid Id = Guid.NewGuid();
 	public string Shader {get; set;} = "shaders/fallback.slang";
+	private Shader.Metadata Meta {get; set;}
 	private Shader.Vertex Vertex {get; set;}
 	private Shader.Fragment Fragment {get; set;}
 
@@ -47,9 +50,15 @@ public partial class Material : Config.Base<Material> {
 			return false;
 		Read(path, f, this);
 		Shader = Shader.Replace('\\', '/');
-		if (!Shader.StartsWith("shaders/"))
+		if (!Shader.StartsWith("shaders/")) //could cause issues?
 			Shader = $"shaders/{Shader}";
-		var meta = Resource.Shader.Metadata.Load(Shader);
+		Meta = Resource.Shader.Metadata.Load(Shader);
+		Dictionary<string, System.Type> schema = [];
+		foreach (var p in Meta.Reflection.Parameters) {
+			if (p.Type.Name == "_Texture")
+				schema[p.Name] = typeof(Texture);
+		}
+		Read(path, f, schema, Attributes);
 		return true;
 	}
 }

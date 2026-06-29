@@ -31,12 +31,12 @@ public class Base<T> : Resource.Base<T> where T : Resource.Base, new() {
 		if (string.IsNullOrEmpty(chunk))
 			return target;
 		var (key,value,next) = ReadKV(chunk);
-
+		
 		if (schema.TryGetValue(key, out var type))
-			target[key] = Value(path, type, value);
+			Log.Info(target[key] = Value(path, type, value));
 
 		if (next is not null)
-			Read(path, next, target);
+			Read(path, next, schema, target);
 		return target;
 	}
 
@@ -75,7 +75,7 @@ public class Base<T> : Resource.Base<T> where T : Resource.Base, new() {
 			return Regex.Replace(value, "^\"|\"$", "");
 		if (type.IsAssignableTo(typeof(Resource.Base))) {
 			value = Regex.Replace(value, "^\"|\"$", "");
-			return Load(type, value) ?? Load(type, $"{string.Join('/', path.Split('/').SkipLast(1))}/{value}");
+			return Load(type, value) ?? Load(type, $"{string.Join('/', path.Split('/').SkipLast(1))}/{value}") ?? Load(type, $"{path.Split('.')[0]}/{value}");
 		}
 		if (Base.GenericDataTypes.Contains(type))
 			return Convert.ChangeType(value, type);

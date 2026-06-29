@@ -47,8 +47,6 @@ public partial class Shader {
 			Reflection = OpenSlangProgram(path, Source)?.GetReflection();
 			if (Reflection is null)
 				return;
-			foreach (var p in Reflection.Parameters)
-				Log.Info($"{p.Name} - {p.Type.Name} at {p.BindingIndex}");
 		}
 
 		private void ReloadDependents() {
